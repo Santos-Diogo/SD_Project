@@ -1,8 +1,8 @@
 package Protocol;
 
 public class RegistoRequest extends Protocol{
-    private String username;
-    private String password;
+    public String username;
+    public String password;
 
     public RegistoRequest(String username, String password){
         super(Type.REG_RQ);
@@ -10,11 +10,4 @@ public class RegistoRequest extends Protocol{
         this.password =password;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

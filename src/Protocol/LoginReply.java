@@ -1,8 +1,8 @@
 package Protocol;
 
 public class LoginReply extends Protocol{
-    private boolean success;
-    private String message;
+    public boolean success;
+    public String message;
 
     public LoginReply(boolean success, String message){
         super(Type.LG_IN_RP);
@@ -10,11 +10,4 @@ public class LoginReply extends Protocol{
         this.message=message;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

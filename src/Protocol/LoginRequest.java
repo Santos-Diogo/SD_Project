@@ -1,20 +1,13 @@
 package Protocol;
 
 public class LoginRequest extends Protocol {
-    private String username;
-    private String password;
+    public String username;
+    public String password;
 
-    public LoginRequest(String user, String pass){
+    public LoginRequest(String username, String password){
         super(Type.LG_IN_RQ);
-        this.username=user;
-        this.password=pass;
+        this.username=username;
+        this.password=password;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

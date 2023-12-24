@@ -1,5 +1,5 @@
 
-package Protocol.Status;
+package Server;
 
 // Classe Task define a estrutura básica de uma tarefa no sistema.
 // Atualmente, a tarefa só está caracterizada por um número identificador.

@@ -1,5 +1,8 @@
 package Protocol.Exec;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 import Protocol.Protocol;
@@ -26,5 +29,33 @@ public class Request extends Protocol
         {
             rl.unlock();
         }
+    }
+
+    public Request (byte[] arg, int mem, int n_job)
+    {
+        super(Type.EXEC_RQ);
+        this.arg = arg;
+        this.mem = mem;
+        this.n_job = n_job;
+    }
+
+    @Override
+    public void serialize (DataOutputStream out) throws IOException
+    {
+        super.serialize(out);
+        out.writeInt(arg.length);
+        out.write(arg);
+        out.writeInt(mem);
+        out.writeInt(n_job);
+    }
+
+    public static Request deserialize (DataInputStream in) throws IOException
+    {   
+        int length = in.readInt();
+        byte[] arg = new byte[length];
+        in.read(arg, 0, length);
+        int mem = in.readInt();
+        int n_job = in.readInt();
+        return new Request(arg, mem, n_job);
     }
 }

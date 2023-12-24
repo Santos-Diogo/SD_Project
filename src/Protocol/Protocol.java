@@ -1,5 +1,8 @@
 package Protocol;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class Protocol {
     
@@ -22,4 +25,14 @@ public class Protocol {
         this.type = type;
     }
 
+    
+    public void serialize (DataOutputStream out) throws IOException
+    {
+        out.writeInt(type.ordinal());
+    }   
+
+    public static Protocol deserialize (DataInputStream in) throws IOException
+    {
+        return new Protocol(Type.values()[in.readInt()]);
+    }
 }

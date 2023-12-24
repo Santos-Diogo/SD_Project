@@ -1,22 +1,25 @@
 package Server;
 
+import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import sd23.*;
 import Protocol.Exec.Request;
 import Protocol.Status.StatusREP;
 import Protocol.Status.StatusREQ;
 
-public class Handler 
+public class Handler implements Runnable
 {
 
     private MemoryManager memoryManager;
     private BlockingQueue<Task> taskQueue;
+    private Socket clientSocket; 
     
     
-    public Handler (MemoryManager memoryManager, BlockingQueue<Task> taskQueue)
+    public Handler (MemoryManager memoryManager, BlockingQueue<Task> taskQueue, Socket clientSocket)
     {
         this.memoryManager = memoryManager;
         this.taskQueue = taskQueue;
+        this.clientSocket = clientSocket;
     }
 
 
@@ -39,5 +42,10 @@ public class Handler
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
             // send error to client (TODO)
         }
+    }
+
+    public void run()
+    {
+        
     }
 }

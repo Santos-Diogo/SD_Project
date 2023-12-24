@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import Protocol.Status.StatusREP;
 import Protocol.Status.StatusREQ;
 
-// Classe Server integra TaskManager e MemoryManager para responder a requisições de status.
+// Classe Server integra a classe MemoryManager e usa blockingqueue para o resolver o taskmanager para responder a requisições de status.
 public class Server {
 
     private MemoryManager memoryManager;  // Instância de MemoryManager para gerir a memória.

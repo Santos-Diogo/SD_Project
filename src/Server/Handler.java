@@ -2,7 +2,9 @@ package Server;
 
 import java.util.concurrent.BlockingQueue;
 import sd23.*;
+import Protocol.Exec.BadResponse;
 import Protocol.Exec.Request;
+import Protocol.Exec.Response;
 import Protocol.Status.StatusREP;
 import Protocol.Status.StatusREQ;
 
@@ -21,23 +23,22 @@ public class Handler
 
 
     // Método para tratar requisições de status. Retorna uma resposta com o estado atual do serviço.
-    public StatusREP handleStatusRequest(StatusREQ request) {
+    public StatusREP handleStatusRequest(StatusREQ request) 
+    {
         long availableMemory = memoryManager.getAvailableMemory();
         int pendingTasks = taskQueue.size();
         return new StatusREP(availableMemory, pendingTasks);
     }
 
-    public void handleExec (Request packet)
+    public Response handleExec (Request packet)
     {
-        try 
-        {
-            // execute task and get output
-            byte[] output = JobFunction.execute(packet.arg);
-        }
-        catch (JobFunctionException e)
-        {
-            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            // send error to client (TODO)
-        }
+        this.taskQueue.add(new Task(packet.n_job, packet.arg));
+        
+
+        return null;    //!!!
+        /* if (not fucked)
+            return new GoodResponse ();
+        else
+            return new BadResponse(null); */
     }
 }

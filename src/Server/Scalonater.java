@@ -5,8 +5,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import Shared.Defines;
+import ThreadTools.ThreadControl;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Scalonater implements Runnable
 {
@@ -35,7 +37,7 @@ public class Scalonater implements Runnable
         // intialize the worker threads
         for (int i= 0; i< Defines.MAX_WORKER_THREADS; i++)
         {
-            Thread t= new Thread(new WorkerThread (consumeQueue));
+            Thread t= new Thread(new WorkerThread (consumeQueue, lower_tc));
             this.worker_threads.add(t);
         }
 
@@ -43,7 +45,7 @@ public class Scalonater implements Runnable
         while (this.self_tc.getRunning())
         {
             // drain available tasks into the scalonater and get the scalonated tasks
-            Set<Task> tasks;
+            Set<Task> tasks= new TreeSet<>();
             inputQueue.drainTo(tasks);
             Set<Task> scalonated= scalonate(tasks);
             
@@ -57,10 +59,17 @@ public class Scalonater implements Runnable
         }
 
         // send termination signal and wait for worker threads to finish work
-        this.lower_tc.set....();
+        this.lower_tc.setRunning(false);
         for (Thread t: this.worker_threads)
         {
-            t.join();
+            try
+            {
+                t.join();
+            }
+            //we keep on trying to join with the worker threads
+            catch (InterruptedException e)
+            {
+            }
         }
     }
 }

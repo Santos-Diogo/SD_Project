@@ -9,18 +9,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import Protocol.Exec.Request;
+import Shared.Defines;
 
 public class Main 
 {
     private static State server_state;
-    private MemoryManager memoryManager;  // Instância de MemoryManager para gerir a memória.
-    private BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
+    private static MemoryManager memoryManager;  // Instância de MemoryManager para gerir a memória.
+    private static BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
+    private static ServerSocket serverSocket;
 
 
-    public void run (String[] args)
+    public static void main (String[] args)
     {
-        //init server state
-        server_state= new State();
+        try {
+            serverSocket = new ServerSocket(Defines.serverport);
+            server_state= new State();
 
+            while(true)
+            {
+                Socket socket = serverSocket.accept();
+                new Thread(new Handler(server_state, socket)).start();
+            }   
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

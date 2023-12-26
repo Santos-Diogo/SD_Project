@@ -4,20 +4,25 @@ import java.util.concurrent.BlockingQueue;
 
 import Protocol.Protocol;
 import Protocol.Exec.Response;
+import Server.Task.Task;
 import ThreadTools.ThreadControl;
 
 class WorkerThread implements Runnable
 {
-    private BlockingQueue<Task> input;
-    private BlockingQueue<Protocol> output;
+    private State server_state;
     private ThreadControl tc;
 
-    WorkerThread (BlockingQueue<Task> input, BlockingQueue<Protocol> output, ThreadControl tc)
+    WorkerThread (State server_state, ThreadControl tc)
     {
-        this.input= input;
+        this.server_state= server_state;
         this.tc= tc;
     }
 
+    /**
+     * Execute the task
+     * @param t task
+     * @return task result
+     */
     private Response exec (Task t)
     {
         try
@@ -27,10 +32,13 @@ class WorkerThread implements Runnable
             
             // utilizar o resultado ou reportar o erro
             System.err.println("success, returned "+output.length+" bytes");
+
+            // send result to the results queue
+
         } 
         catch (JobFunctionException e) 
         {
-            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
+            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());     
         }
     }
 
@@ -40,9 +48,12 @@ class WorkerThread implements Runnable
         {
             try
             {
-                Task t= this.input.take();
-                Protocol p= exec(t);
-                output.add(p);
+                //take task
+                Task t= this.server_state.taskQueue.take();
+                //execute
+                Response r= exec(t);
+                //send result
+                server_state.addResult(t.submitter, r);
             }
             // we keep on trying to take tasks
             catch (InterruptedException e)

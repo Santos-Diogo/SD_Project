@@ -12,17 +12,25 @@ import Protocol.Exec.Request;
 import Protocol.Exec.Response;
 import Protocol.Status.StatusREP;
 import Protocol.Status.StatusREQ;
+import Server.Task.Task;
+import Server.Task.TaskMaker;
 
 public class Handler implements Runnable
 {
     private State server_state;
+    private TaskMaker task_maker;
+    private BlockingQueue<Response> task_result;
     private Socket clientSocket;
     private DataInputStream in;
     
     
     public Handler (State server_state, Socket clientSocket)
     {
+        // set the server state, get a taskMaker and get the task result queue
         this.server_state= server_state;
+        this.task_maker= new TaskMaker();
+        this.task_result= this.server_state.registerSubmitter(this.task_maker.submitter);
+        
         this.clientSocket= clientSocket;
     }
 
@@ -38,14 +46,19 @@ public class Handler implements Runnable
 
     private Response handleExec (Request packet)
     {
-        this.server_state.taskQueue.add(new Task(packet.n_job, packet.arg));
+        // send a task request
+        this.server_state.taskQueue.add(task_maker.newTask(packet.arg));
         
-
-        return null;    //!!!
-        /* if (not fucked)
-            return new GoodResponse();
-        else
-            return new BadResponse(); */
+        // get a task result
+        try
+        {
+            return this.task_result.take();
+        }
+        catch (InterruptedException e)
+        {
+            System.out.println("Interrupted in handleExec return");
+            return null;
+        }
     }
 
 

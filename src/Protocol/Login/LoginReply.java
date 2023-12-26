@@ -1,6 +1,8 @@
-package Protocol;
+package Protocol.Login;
 
-public class LoginReply extends Protocol{
+import Protocol.Protocol;
+
+public class LoginReply extends Protocol {
     public boolean success;
     public String message;
 

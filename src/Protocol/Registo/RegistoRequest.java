@@ -1,6 +1,8 @@
-package Protocol;
+package Protocol.Registo;
 
-public class RegistoRequest extends Protocol{
+import Protocol.Protocol;
+
+public class RegistoRequest extends Protocol {
     public String username;
     public String password;
 

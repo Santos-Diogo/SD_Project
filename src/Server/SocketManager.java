@@ -97,7 +97,7 @@ public class SocketManager
     public void stop ()
     {
         //stop threads
-        this.tc.set_running(false);
+        this.tc.setRunning(false);
 
         try
         {

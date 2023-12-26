@@ -15,18 +15,15 @@ import Protocol.Status.StatusREQ;
 
 public class Handler implements Runnable
 {
-
-    private MemoryManager memoryManager;
-    private BlockingQueue<Task> taskQueue;
+    private State server_state;
     private Socket clientSocket;
     private DataInputStream in;
     
     
-    public Handler (MemoryManager memoryManager, BlockingQueue<Task> taskQueue, Socket clientSocket)
+    public Handler (State server_state, Socket clientSocket)
     {
-        this.memoryManager = memoryManager;
-        this.taskQueue = taskQueue;
-        this.clientSocket = clientSocket;
+        this.server_state= server_state;
+        this.clientSocket= clientSocket;
     }
 
 
@@ -34,14 +31,14 @@ public class Handler implements Runnable
     // Não aceita nada por parametro pois o StatusREQ (para já pelo menos) não tem qualquer conteúdo
     private StatusREP handleStatusRequest() 
     {
-        long availableMemory = memoryManager.getAvailableMemory();
-        int pendingTasks = taskQueue.size();
+        long availableMemory = this.server_state.memoryManager.getAvailableMemory();
+        int pendingTasks = this.server_state.taskQueue.size();
         return new StatusREP(availableMemory, pendingTasks);
     }
 
     private Response handleExec (Request packet)
     {
-        this.taskQueue.add(new Task(packet.n_job, packet.arg));
+        this.server_state.taskQueue.add(new Task(packet.n_job, packet.arg));
         
 
         return null;    //!!!

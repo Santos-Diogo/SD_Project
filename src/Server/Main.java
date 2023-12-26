@@ -12,8 +12,15 @@ import Protocol.Exec.Request;
 
 public class Main 
 {
-
+    private static State server_state;
     private MemoryManager memoryManager;  // Instância de MemoryManager para gerir a memória.
     private BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
 
+
+    public void run (String[] args)
+    {
+        //init server state
+        server_state= new State();
+
+    }
 }

@@ -31,7 +31,7 @@ public class Handler implements Runnable
     // Não aceita nada por parametro pois o StatusREQ (para já pelo menos) não tem qualquer conteúdo
     private StatusREP handleStatusRequest() 
     {
-        long availableMemory = this.server_state.memoryManager.getAvailableMemory();
+        long availableMemory = this.server_state.getAvailableMemory();
         int pendingTasks = this.server_state.taskQueue.size();
         return new StatusREP(availableMemory, pendingTasks);
     }

@@ -1,7 +1,9 @@
 package Server;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
@@ -16,14 +18,15 @@ import Protocol.Status.StatusREQ;
 public class Handler implements Runnable
 {
     private State server_state;
-    private Socket clientSocket;
     private DataInputStream in;
+    private DataOutputStream out;
     
     
-    public Handler (State server_state, Socket clientSocket)
+    public Handler (State server_state, Socket clientSocket) throws IOException
     {
         this.server_state= server_state;
-        this.clientSocket= clientSocket;
+        in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+        out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
     }
 
 
@@ -56,7 +59,7 @@ public class Handler implements Runnable
             switch (packet.type) 
             {
                 case EXEC_RQ:
-                    handleExec(Request.deserialize(this.in));
+                    handleExec(Request.deserialize(in));
                     break;
                 case STATUS_RQ:
                     handleStatusRequest();
@@ -76,7 +79,6 @@ public class Handler implements Runnable
     {
         try 
         {
-            in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
             while(true)
             {
                 handle(Protocol.deserialize(in));

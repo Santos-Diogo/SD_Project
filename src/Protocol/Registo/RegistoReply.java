@@ -1,6 +1,8 @@
-package Protocol;
+package Protocol.Registo;
 
-public class RegistoReply extends Protocol{
+import Protocol.Protocol;
+
+public class RegistoReply extends Protocol {
     public boolean success;
     public String message;
 

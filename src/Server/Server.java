@@ -11,7 +11,7 @@ public class Server {
 
     private MemoryManager memoryManager;  // Instância de MemoryManager para gerir a memória.
 
-        // Substituindo TaskManager por uma BlockingQueue
+    // Substituindo TaskManager por uma BlockingQueue
     private BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
 
     // Métodos para manipular a fila de tarefas

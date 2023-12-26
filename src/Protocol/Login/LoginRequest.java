@@ -1,4 +1,6 @@
-package Protocol;
+package Protocol.Login;
+
+import Protocol.Protocol;
 
 public class LoginRequest extends Protocol {
     public String username;

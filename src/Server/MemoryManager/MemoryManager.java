@@ -1,6 +1,6 @@
 // Classe qie trata da ocupação de serviço
 
-package Server;
+package Server.MemoryManager;
 import java.lang.management.ManagementFactory;  // Interface para a gestão de memória em JAVA 
 import java.lang.management.MemoryMXBean;
 

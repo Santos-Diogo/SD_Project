@@ -14,6 +14,7 @@ import java.util.TreeSet;
 public class Scalonater implements Runnable
 {
     BlockingQueue<Task> inputQueue;
+    BlockingQueue<Task> workerQueue;
     BlockingQueue<Protocol> outputQueue;
     Set<Thread> worker_threads;
     ThreadControl self_tc;                          // atribute to control own execution
@@ -22,6 +23,7 @@ public class Scalonater implements Runnable
     public Scalonater (BlockingQueue<Task> inputQueue, ThreadControl tc)
     {
         this.inputQueue= inputQueue;
+        this.workerQueue= new LinkedBlockingQueue<>();
         this.self_tc= tc;
         this.lower_tc= new ThreadControl();
     }
@@ -38,6 +40,8 @@ public class Scalonater implements Runnable
         //wait
         while (this.self_tc.getRunning())
         {
+            //scalonate some stuff later
+            this.workerQueue.add(this.inputQueue.take());
         }
 
         // send termination signal and wait for worker threads to finish work

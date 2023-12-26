@@ -8,13 +8,13 @@ import ThreadTools.ThreadControl;
 
 class WorkerThread implements Runnable
 {
-    private BlockingQueue<Task> tasks;
-    private ThreadControl tc;
+    private BlockingQueue<Task> input;
     private BlockingQueue<Protocol> output;
+    private ThreadControl tc;
 
-    WorkerThread (BlockingQueue<Task> tasks, ThreadControl tc)
+    WorkerThread (BlockingQueue<Task> input, BlockingQueue<Protocol> output, ThreadControl tc)
     {
-        this.tasks= tasks;
+        this.input= input;
         this.tc= tc;
     }
 
@@ -22,9 +22,8 @@ class WorkerThread implements Runnable
     {
         try
         {
-
             // executar a tarefa
-            byte[] output = JobFunction.execute(job);
+            byte[] output = JobFunction.execute(t.arg);
             
             // utilizar o resultado ou reportar o erro
             System.err.println("success, returned "+output.length+" bytes");
@@ -41,7 +40,7 @@ class WorkerThread implements Runnable
         {
             try
             {
-                Task t= this.tasks.take();
+                Task t= this.input.take();
                 Protocol p= exec(t);
                 output.add(p);
             }

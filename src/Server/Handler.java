@@ -7,14 +7,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
-import sd23.*;
-import Protocol.Exec.BadResponse;
 import Protocol.Protocol;
+import Protocol.Authentication.*;
 import Protocol.Exec.Request;
 import Protocol.Exec.Response;
 import Protocol.Status.StatusREP;
-import Protocol.Status.StatusREQ;
-import Server.Task.Task;
 import Server.Task.TaskMaker;
 
 public class Handler implements Runnable
@@ -22,6 +19,7 @@ public class Handler implements Runnable
     private State server_state;
     private TaskMaker task_maker;
     private BlockingQueue<Response> task_result;
+    private String user;
     private DataInputStream in;
     private DataOutputStream out;
     
@@ -32,7 +30,7 @@ public class Handler implements Runnable
         this.server_state= server_state;
         this.task_maker= new TaskMaker();
         this.task_result= this.server_state.registerSubmitter(this.task_maker.submitter);
-        
+        user = null;
         in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
         out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
     }
@@ -64,6 +62,56 @@ public class Handler implements Runnable
         }
     }
 
+    private void handleRegisterRequest (RegistoRequest packet)
+    {
+        if (server_state.existsUser(packet.username))
+        {
+            try{
+                new RegistoReply(false, "Username already exists.").serialize(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        server_state.addUser(packet.username, packet.password);
+        user = packet.username;
+        try {
+            new RegistoReply(true, "User registered with success!\nWelcome " + user).serialize(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Registered user: Username - " + packet.username + "; Password - " + packet.password);
+        System.out.println("User '" + user + "' logged in");
+    }
+
+    private void handleLoginRequest (LoginRequest packet)
+    {
+        if (!server_state.existsUser(packet.username))
+        {
+            try{
+                new LoginReply(false, "Username does not exist.").serialize(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        if (!server_state.checkPassword(packet.username, packet.password))
+        {
+            try{
+                new LoginReply(false, "Password Incorrect!").serialize(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        user = packet.username;
+        try {
+            new LoginReply(true, "Welcome " +  user).serialize(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("User '" + user + "' logged in");
+    }
 
     private void handle (Protocol packet)
     {
@@ -72,10 +120,16 @@ public class Handler implements Runnable
             switch (packet.type) 
             {
                 case EXEC_RQ:
-                    handleExec(Request.deserialize(in));
+                    //handleExec(Request.deserialize(in));
                     break;
                 case STATUS_RQ:
                     handleStatusRequest();
+                    break;
+                case LG_IN_RQ:
+                    handleLoginRequest(LoginRequest.deserialize(in));
+                    break;
+                case REG_RQ:
+                    handleRegisterRequest(RegistoRequest.deserialize(in));
                     break;
                 default:
                     break;

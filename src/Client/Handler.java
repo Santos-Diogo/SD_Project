@@ -9,6 +9,11 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import Protocol.Protocol;
+import Protocol.Authentication.LoginReply;
+import Protocol.Authentication.LoginRequest;
+import Protocol.Authentication.RegistoReply;
+import Protocol.Authentication.RegistoRequest;
 import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Request;
@@ -51,7 +56,7 @@ public class Handler
     {
         try {
             byte[] job = getContent(file);
-            Request msg = new Request(job, 400);
+            Protocol msg = new Request(job, 400);
             msg.serialize(out);
             Response packet = Response.deserialize(in);
             if(packet.success)
@@ -63,6 +68,33 @@ public class Handler
         }
     }
 
+    public boolean handleLogin (String username, String password)
+    {
+        LoginRequest loginReq = new LoginRequest(username, password);
+        try{
+            loginReq.serialize(out);
+            LoginReply loginRep = LoginReply.deserialize(in);
+            System.out.println(loginRep.message);
+            return loginRep.success;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean handleRegister (String username, String password)
+    {
+        RegistoRequest registerReq = new RegistoRequest(username, password);
+        try{
+            registerReq.serialize(out);
+            RegistoReply registerRep = RegistoReply.deserialize(in);
+            System.out.println(registerRep.message);
+            return registerRep.success;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
     void handle (String command)

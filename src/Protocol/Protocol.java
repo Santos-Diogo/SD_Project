@@ -25,6 +25,11 @@ public class Protocol {
         this.type = type;
     }
 
+    public Protocol (Protocol copy)
+    {
+        this.type = copy.type;
+    }
+
     
     public void serialize (DataOutputStream out) throws IOException
     {

@@ -8,23 +8,27 @@ import Shared.ClientServer.ExecError;
 
 public class BadResponse extends Response
 {
-    public ExecError error;                  //obtem se uma mensagem por uma classe que traduz a chave do enum numa string de erro
+    public int error_code;
+    public String error_message;
     
-    public BadResponse (ExecError error)
+    public BadResponse (int error_code, String error_message)
     {
         super(false);
-        this.error= error;
+        this.error_code= error_code;
+        this.error_message= error_message;
     }
 
     @Override
     public void serialize (DataOutputStream out) throws IOException
     {
-        super.serialize(out);
+        out.writeInt(error_code);
+        out.writeUTF(error_message);
     }
 
     public static BadResponse deserialize (DataInputStream in, Response packet)
     {
         //@TODO
-        return new BadResponse(null);
+        new BadResponse(null);
+        return 
     }
 }

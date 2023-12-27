@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import Shared.ClientServer.ExecError;
-
 public class BadResponse extends Response
 {
     public int error_code;
@@ -25,10 +23,8 @@ public class BadResponse extends Response
         out.writeUTF(error_message);
     }
 
-    public static BadResponse deserialize (DataInputStream in, Response packet)
+    public static BadResponse deserialize (DataInputStream in, Response packet) throws IOException
     {
-        //@TODO
-        new BadResponse(null);
-        return 
+        return new BadResponse (in.readInt(), new String (in.readUTF())); 
     }
 }

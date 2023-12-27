@@ -4,7 +4,8 @@ package Server.Task;
 public class Task 
 {
     public int submitter;         // task submitter id
-    public int num;               // task id 
+    public int num;               // task id
+    public int mem;
     public byte[] arg;            // Task's arguments
 
     /**
@@ -12,7 +13,7 @@ public class Task
      * @param num
      * @param arg
      */
-    public Task(int submitter, int num, byte[] arg) 
+    public Task(int submitter, int num, int mem, byte[] arg) 
     {
         this.num= num;
         this.arg= arg;

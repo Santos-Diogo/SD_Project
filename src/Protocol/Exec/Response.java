@@ -44,6 +44,7 @@ public class Response extends Protocol
         super.serialize(out);
         out.writeInt(n_job);
         out.writeBoolean(success);
+        out.flush();
     }
 
     public static Response deserialize (DataInputStream in) throws IOException

@@ -14,7 +14,7 @@ public class State
 {
     private ReentrantReadWriteLock mem_lock;                    // memory lock
     private ReentrantReadWriteLock task_res_lock;               // locks the taks results map
-    private UserManager usermanager;
+    private UserManager usermanager;                            // keeps the information about the users
     private Map<Integer, BlockingQueue<Response>> task_results; // maps a submitter to his tasks results
     public BlockingQueue<Task> taskQueue;                       // task queue
 

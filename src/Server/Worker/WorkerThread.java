@@ -1,21 +1,29 @@
-package Server;
+package Server.Worker;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Condition;
 
 import Protocol.Protocol;
 import Protocol.Exec.Response;
+import Server.State;
 import Server.Task.Task;
 import ThreadTools.ThreadControl;
+import Protocol.Exec.GoodResponse;
+import Protocol.Exec.BadResponse;
 
 class WorkerThread implements Runnable
 {
-    private State server_state;
+    private BlockingQueue<Task> input;
+    private State state;
     private ThreadControl tc;
+    private Condition finished;
 
-    WorkerThread (State server_state, ThreadControl tc)
+    WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, Condition finished)
     {
-        this.server_state= server_state;
+        this.input= input;
+        this.state= state;
         this.tc= tc;
+        this.finished= finished;
     }
 
     /**
@@ -30,15 +38,14 @@ class WorkerThread implements Runnable
             // executar a tarefa
             byte[] output = JobFunction.execute(t.arg);
             
-            // utilizar o resultado ou reportar o erro
+            // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-
-            // send result to the results queue
-
+            return new GoodResponse(output);
         } 
         catch (JobFunctionException e) 
         {
-            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());     
+            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
+            return new BadResponse(e.getCode, e.getMessage);
         }
     }
 
@@ -49,11 +56,13 @@ class WorkerThread implements Runnable
             try
             {
                 //take task
-                Task t= this.server_state.taskQueue.take();
+                Task t= this.input.take();
                 //execute
                 Response r= exec(t);
                 //send result
-                server_state.addResult(t.submitter, r);
+                this.state.addResult(t.submitter, r);
+                //mark as finished
+                this.finished.signalAll();
             }
             // we keep on trying to take tasks
             catch (InterruptedException e)

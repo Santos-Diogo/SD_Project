@@ -15,9 +15,9 @@ public class Main
 
     private static void registerClient()
     {
-        System.out.print("\n\nUsername: ");
+        System.out.print("\nUsername: ");
         String username = scanner.nextLine();
-        System.out.print("\nPassword: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
         authenticated = handler.handleRegister(username, password);
     }
@@ -45,6 +45,9 @@ public class Main
     private static String command_request() 
     {
         System.out.println("\nType your desired command:");
+        System.out.println("status - Memory available and number of pending tasks");
+        System.out.println("exec <file> - Request to execute task based on <file>");
+        System.out.print("Command: ");
         return scanner.nextLine();
     }
     

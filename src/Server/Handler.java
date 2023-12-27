@@ -38,11 +38,16 @@ public class Handler implements Runnable
 
     // Método para tratar requisições de status. Retorna uma resposta com o estado atual do serviço.
     // Não aceita nada por parametro pois o StatusREQ (para já pelo menos) não tem qualquer conteúdo
-    private StatusREP handleStatusRequest() 
+    private void handleStatusRequest() 
     {
+        System.out.println("STATUS");
         long availableMemory = this.server_state.getAvailableMemory();
         int pendingTasks = this.server_state.taskQueue.size();
-        return new StatusREP(availableMemory, pendingTasks);
+        try {
+            new StatusREP(availableMemory, pendingTasks).serialize(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Response handleExec (Request packet)

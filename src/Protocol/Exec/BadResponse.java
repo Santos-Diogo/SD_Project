@@ -22,6 +22,7 @@ public class BadResponse extends Response
         super.serialize(out);
         out.writeInt(error_code);
         out.writeUTF(error_message);
+        out.flush();
     }
 
     public static BadResponse deserialize (DataInputStream in, Response packet) throws IOException

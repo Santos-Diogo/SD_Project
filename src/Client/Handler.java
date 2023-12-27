@@ -18,6 +18,8 @@ import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Request;
 import Protocol.Exec.Response;
+import Protocol.Status.StatusREP;
+import Protocol.Status.StatusREQ;
 
 public class Handler
 {
@@ -68,6 +70,18 @@ public class Handler
         }
     }
 
+    private void handleStatus ()
+    {
+        try {
+            new StatusREQ().serialize(out);
+            StatusREP packet = StatusREP.deserialize(in);
+            System.out.println("Memory available: " + packet.available_memory);
+            System.out.println("Number of Pending tasks: " + packet.number_of_tasks);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean handleLogin (String username, String password)
     {
         LoginRequest loginReq = new LoginRequest(username, password);
@@ -104,6 +118,12 @@ public class Handler
             case "exec":
             {
                 handleExec(command.split("\\s+")[1]);
+                break;
+            }
+            case "status":
+            {
+                handleStatus();
+                break;
             }
             default:
                 System.out.println("Command not supported");

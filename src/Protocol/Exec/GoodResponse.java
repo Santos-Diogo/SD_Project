@@ -26,6 +26,7 @@ public class GoodResponse extends Response
         super.serialize(out);
         out.writeInt(response.length);
         out.write(response);
+        out.flush();
     }
 
     public static GoodResponse deserialize (DataInputStream in, Response packet) throws IOException

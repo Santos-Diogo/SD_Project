@@ -47,6 +47,7 @@ public class Request extends Protocol
         out.write(arg);
         out.writeInt(mem);
         out.writeInt(n_job);
+        out.flush();
     }
 
     public static Request deserialize (DataInputStream in) throws IOException

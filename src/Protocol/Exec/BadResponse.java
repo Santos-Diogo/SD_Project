@@ -19,6 +19,7 @@ public class BadResponse extends Response
     @Override
     public void serialize (DataOutputStream out) throws IOException
     {
+        super.serialize(out);
         out.writeInt(error_code);
         out.writeUTF(error_message);
     }

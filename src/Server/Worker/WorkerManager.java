@@ -5,7 +5,7 @@ import java.lang.Thread;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,7 +25,7 @@ public class WorkerManager implements Runnable
     {
         this.state= state;
         this.tc= tc;
-        this.threads= new TreeSet<>();
+        this.threads= new HashSet<>();
         this.worker_queue= new LinkedBlockingQueue<>();
         this.worker_finished= new ReentrantLock().newCondition();
     }
@@ -54,9 +54,10 @@ public class WorkerManager implements Runnable
             }
 
             // if we found a task that fits
-            if (t== null)
+            if (t!= null)
             {
                 // add task to exec queue
+                System.out.println("Add worker queue");
                 this.worker_queue.add(t);
             }
             else
@@ -82,7 +83,7 @@ public class WorkerManager implements Runnable
         }
 
         // send worker threads tasks
-        Set<Task> tasks= new TreeSet<>();
+        Set<Task> tasks= new HashSet<>();
         while (this.tc.getRunning())
         {
             // get available tasks

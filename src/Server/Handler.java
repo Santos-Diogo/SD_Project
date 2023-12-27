@@ -50,20 +50,20 @@ public class Handler implements Runnable
         }
     }
 
-    private Response handleExec (Request packet)
+    private void handleExec (Request packet)
     {
         // send a task request
-        this.server_state.taskQueue.add(task_maker.newTask(packet.arg));
-        
+        System.out.println("Handle exec");
+        this.server_state.taskQueue.add(task_maker.newTask(packet.arg, packet.mem));
         // get a task result
         try
         {
-            return this.task_result.take();
+            System.out.println("Dentro try");
+            this.task_result.take().serialize(out);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             System.out.println("Interrupted in handleExec return");
-            return null;
         }
     }
 
@@ -125,7 +125,7 @@ public class Handler implements Runnable
             switch (packet.type) 
             {
                 case EXEC_RQ:
-                    //handleExec(Request.deserialize(in));
+                    handleExec(Request.deserialize(in));
                     break;
                 case STATUS_RQ:
                     handleStatusRequest();

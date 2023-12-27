@@ -2,7 +2,7 @@ package Server.Worker;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Condition;
-
+import sd23.*;
 import Protocol.Protocol;
 import Protocol.Exec.Response;
 import Server.State;
@@ -18,7 +18,7 @@ class WorkerThread implements Runnable
     private ThreadControl tc;
     private Condition finished;
 
-    WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, Condition finished)
+    public WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, Condition finished)
     {
         this.input= input;
         this.state= state;
@@ -45,7 +45,7 @@ class WorkerThread implements Runnable
         catch (JobFunctionException e) 
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            return new BadResponse(e.getCode, e.getMessage);
+            return new BadResponse(e.getCode(), e.getMessage());
         }
     }
 
@@ -57,6 +57,7 @@ class WorkerThread implements Runnable
             {
                 //take task
                 Task t= this.input.take();
+                System.out.println("depois do take workerthread");
                 //execute
                 Response r= exec(t);
                 //send result

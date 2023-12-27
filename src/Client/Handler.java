@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import Protocol.Protocol;
 import Protocol.Authentication.LoginReply;
 import Protocol.Authentication.LoginRequest;
 import Protocol.Authentication.RegistoReply;
@@ -49,16 +48,16 @@ public class Handler
     private void handleExecFail (Response packet) throws IOException
     {
         BadResponse response = BadResponse.deserialize(in, packet);
-        System.err.println("job failed");
+        System.err.println("job failed: code="+response.error_code+" message="+response.error_message);
     }
 
 
     //primeira versão; numa próxima provavelmente o melhor será ter isto numa thread para evitar casos em q ler o ficheiro demora demasiado tempo
-    private void handleExec(String file)
+    private void handleExec(String file, Integer mem)
     {
         try {
             byte[] job = getContent(file);
-            Protocol msg = new Request(job, 400);
+            Request msg = new Request(job, mem);
             msg.serialize(out);
             Response packet = Response.deserialize(in);
             if(packet.success)
@@ -117,7 +116,7 @@ public class Handler
         {
             case "exec":
             {
-                handleExec(command.split("\\s+")[1]);
+                handleExec(command.split("\\s+")[1], Integer.parseInt(command.split("\\s+")[2]));
                 break;
             }
             case "status":

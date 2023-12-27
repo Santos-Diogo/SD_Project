@@ -6,6 +6,8 @@ import Protocol.Protocol;
 import Protocol.Exec.Response;
 import Server.Task.Task;
 import ThreadTools.ThreadControl;
+import Protocol.Exec.GoodResponse;
+import Protocol.Exec.BadResponse;
 
 class WorkerThread implements Runnable
 {
@@ -30,15 +32,14 @@ class WorkerThread implements Runnable
             // executar a tarefa
             byte[] output = JobFunction.execute(t.arg);
             
-            // utilizar o resultado ou reportar o erro
+            // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-
-            // send result to the results queue
-
+            return new GoodResponse(output);
         } 
         catch (JobFunctionException e) 
         {
-            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());     
+            System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
+            return new BadResponse();
         }
     }
 

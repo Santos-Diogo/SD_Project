@@ -38,8 +38,36 @@ public class WorkerManager implements Runnable
     {
         while (!tasks.isEmpty())
         {
-            /* se o espaco que existe na memoria for suficiente para alguma task metemos essa task
-            senao ficamos a espera ate uma worker thread acabar usando a condition do worker_finished */
+            long mem= this.state.getAvailableMemory();
+            
+            // try to get a task that fits
+            Task t= null;
+            for (Task setTask: tasks)
+            {
+                // if task fits
+                if (mem> setTask.mem)
+                {
+                    // set to execute the task and remove it from the task set
+                    t= setTask;
+                    tasks.remove(setTask);
+                }
+            }
+
+            // if we found a task that fits
+            if (t== null)
+            {
+                // add task to exec queue
+                this.worker_queue.add(t);
+            }
+            else
+            {
+                // wait for a worker to finish
+                try
+                {
+                    this.worker_finished.await();
+                }
+                catch (InterruptedException e) {}
+            }
         }
     }
 

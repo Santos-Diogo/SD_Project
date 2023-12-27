@@ -29,8 +29,8 @@ public class TaskMaker
      * @param arg
      * @return
      */
-    public Task newTask (byte[] arg)
+    public Task newTask (byte[] arg, int mem)
     {
-        return new Task(submitter, this.task_inc++, arg);
+        return new Task(submitter, this.task_inc++, mem, arg);
     }
 }

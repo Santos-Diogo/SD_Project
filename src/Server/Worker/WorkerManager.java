@@ -19,6 +19,7 @@ public class WorkerManager implements Runnable
     private ThreadControl tc;
     private Set<Thread> threads;
     private BlockingQueue<Task> worker_queue;
+    private ReentrantLock finished_lock;
     private Condition worker_finished;              // used to signal worker_manager that a thread as finished
 
     public WorkerManager (State state, ThreadControl tc)
@@ -27,7 +28,8 @@ public class WorkerManager implements Runnable
         this.tc= tc;
         this.threads= new HashSet<>();
         this.worker_queue= new LinkedBlockingQueue<>();
-        this.worker_finished= new ReentrantLock().newCondition();
+        this.finished_lock= new ReentrantLock();
+        this.worker_finished= this.finished_lock.newCondition();
     }
 
     /**
@@ -77,7 +79,7 @@ public class WorkerManager implements Runnable
         // setup worker threads
         for (int i= 0; i< Defines.MAX_WORKER_THREADS; i++)
         {
-            Thread t= new Thread(new WorkerThread(worker_queue, state, tc, worker_finished));
+            Thread t= new Thread(new WorkerThread(worker_queue, state, tc, finished_lock, worker_finished));
             t.start();
             this.threads.add(t);
         }

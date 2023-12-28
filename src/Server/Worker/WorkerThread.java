@@ -2,6 +2,7 @@ package Server.Worker;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import sd23.*;
 import Protocol.Protocol;
 import Protocol.Exec.Response;
@@ -16,13 +17,15 @@ class WorkerThread implements Runnable
     private BlockingQueue<Task> input;
     private State state;
     private ThreadControl tc;
+    private ReentrantLock finished_lock;
     private Condition finished;
 
-    public WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, Condition finished)
+    public WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, ReentrantLock finished_lock, Condition finished)
     {
         this.input= input;
         this.state= state;
         this.tc= tc;
+        this.finished_lock= finished_lock;
         this.finished= finished;
     }
 
@@ -63,11 +66,16 @@ class WorkerThread implements Runnable
                 //send result
                 this.state.addResult(t.submitter, r);
                 //mark as finished
+                this.finished_lock.lock();
                 this.finished.signalAll();
             }
             // we keep on trying to take tasks
             catch (InterruptedException e)
             {
+            }
+            finally
+            {
+                this.finished_lock.unlock();
             }
         }
     }

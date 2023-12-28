@@ -2,8 +2,6 @@ package Server.Worker;
 
 import Server.State;
 import java.lang.Thread;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
@@ -11,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import Server.Task.Task;
 import Shared.Defines;
+import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
 public class WorkerManager implements Runnable
@@ -18,7 +17,7 @@ public class WorkerManager implements Runnable
     private State state;
     private ThreadControl tc;
     private Set<Thread> threads;
-    private BlockingQueue<Task> worker_queue;
+    private LinkedBoundedBuffer<Task> worker_queue;
     private ReentrantLock finished_lock;
     private Condition worker_finished;              // used to signal worker_manager that a thread as finished
 
@@ -27,7 +26,7 @@ public class WorkerManager implements Runnable
         this.state= state;
         this.tc= tc;
         this.threads= new HashSet<>();
-        this.worker_queue= new LinkedBlockingQueue<>();
+        this.worker_queue= new LinkedBoundedBuffer<>();
         this.finished_lock= new ReentrantLock();
         this.worker_finished= this.finished_lock.newCondition();
     }
@@ -59,7 +58,11 @@ public class WorkerManager implements Runnable
             if (t!= null)
             {
                 // add task to exec queue
-                this.worker_queue.add(t);
+                try {
+                    this.worker_queue.put(t);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else
             {

@@ -1,26 +1,26 @@
 package Server.Worker;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import sd23.*;
 import Protocol.Protocol;
 import Protocol.Exec.Response;
 import Server.State;
 import Server.Task.Task;
+import sd23.*;
+import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.BadResponse;
 
 class WorkerThread implements Runnable
 {
-    private BlockingQueue<Task> input;
+    private LinkedBoundedBuffer<Task> input;
     private State state;
     private ThreadControl tc;
     private ReentrantLock finished_lock;
     private Condition finished;
 
-    public WorkerThread (BlockingQueue<Task> input, State state, ThreadControl tc, ReentrantLock finished_lock, Condition finished)
+    public WorkerThread (LinkedBoundedBuffer<Task> input, State state, ThreadControl tc, ReentrantLock finished_lock, Condition finished)
     {
         this.input= input;
         this.state= state;

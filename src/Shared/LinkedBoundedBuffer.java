@@ -71,4 +71,29 @@ public class LinkedBoundedBuffer<E>{
             l.unlock();
         }
     }
+
+    public int size ()
+    {
+        l.lock();
+        try {
+            return queue.size();
+        } finally {
+            l.unlock();
+        }
+    }
+
+    public int drainTo(Collection<? super E> targetCollection) {
+        l.lock();
+        try {
+            int elementsDrained = 0;
+            while (!queue.isEmpty()) {
+                targetCollection.add(queue.remove());
+                elementsDrained++;
+            }
+            notFull.signalAll(); 
+            return elementsDrained;
+        } finally {
+            l.unlock();
+        }
+    }
 }

@@ -59,7 +59,6 @@ public class WorkerManager implements Runnable
             if (t!= null)
             {
                 // add task to exec queue
-                System.out.println("Add worker queue");
                 this.worker_queue.add(t);
             }
             else

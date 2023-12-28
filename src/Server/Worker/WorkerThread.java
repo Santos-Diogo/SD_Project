@@ -60,7 +60,6 @@ class WorkerThread implements Runnable
             {
                 //take task
                 Task t= this.input.take();
-                System.out.println("depois do take workerthread");
                 //execute
                 Response r= exec(t);
                 //send result

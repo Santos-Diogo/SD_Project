@@ -40,7 +40,6 @@ public class Handler implements Runnable
     // Não aceita nada por parametro pois o StatusREQ (para já pelo menos) não tem qualquer conteúdo
     private void handleStatusRequest() 
     {
-        System.out.println("STATUS");
         long availableMemory = this.server_state.getAvailableMemory();
         int pendingTasks = this.server_state.taskQueue.size();
         try {
@@ -53,12 +52,10 @@ public class Handler implements Runnable
     private void handleExec (Request packet)
     {
         // send a task request
-        System.out.println("Handle exec");
         this.server_state.taskQueue.add(task_maker.newTask(packet.arg, packet.mem));
         // get a task result
         try
         {
-            System.out.println("Dentro try");
             this.task_result.take().serialize(out);
         }
         catch (Exception e)

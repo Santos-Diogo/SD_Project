@@ -30,7 +30,7 @@ public class Main
             // create reciever, executor and transmitter
             ThreadControl tc= new ThreadControl();
             new Thread (new Transmitter (tc, output, state)).start();
-            new Thread (new Receiver(state, input)).start();
+            new Thread (new Receiver(tc, state, input)).start();
             new Thread (new WorkerManager()).start();
         }
         catch (IOException e)

@@ -40,4 +40,12 @@ public class ThreadControl
             l.readLock().unlock();
         }
     }
+
+    /**
+     * Used to wait for termination
+     */
+    public void waitTerm ()
+    {
+
+    }
 }

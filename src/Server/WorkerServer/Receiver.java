@@ -14,6 +14,7 @@ public class Receiver implements Runnable
 
     public Receiver (ThreadControl tc, State state, DataInputStream input)
     {
+        this.tc= tc;
         this.state= state;
         this.input= input;
     }

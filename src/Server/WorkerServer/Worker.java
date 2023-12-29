@@ -33,7 +33,7 @@ public class Worker implements Runnable
             System.err.println("success, returned "+output.length+" bytes");
             return new GoodResponse(output);
         } 
-        catch (JobFunctionException e) 
+        catch (JobFunctionException e)
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
             return new BadResponse(e.getCode(), e.getMessage());
@@ -46,7 +46,7 @@ public class Worker implements Runnable
         {
             try
             {
-                Task t= this.state.inputQueue.take();
+                Task t= this.state.worker_queue.take();
                 this.state.outputQueue.put(exec(t));
             }
             catch (InterruptedException e) {}

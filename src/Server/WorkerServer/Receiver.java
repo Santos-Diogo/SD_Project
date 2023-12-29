@@ -3,7 +3,6 @@ package Server.WorkerServer;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import Protocol.Exec.Request;
 import Server.Packet.Task;
 import ThreadTools.ThreadControl;
 
@@ -27,7 +26,7 @@ public class Receiver implements Runnable
             try
             {
                 Task t= Task.deserialize(this.input);
-                this.state.inputQueue.put(t);
+                this.state.manager_queue.put(t);
             }
             catch (InterruptedException e) {}
             catch (IOException e) 

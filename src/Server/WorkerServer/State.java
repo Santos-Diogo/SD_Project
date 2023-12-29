@@ -4,15 +4,17 @@ import Protocol.Exec.Response;
 import Server.Packet.Task;
 import Shared.LinkedBoundedBuffer;
 
-public class State
+class State
 {
-    public LinkedBoundedBuffer<Task> inputQueue;
-    public LinkedBoundedBuffer<Response> outputQueue;
-    public long max_mem;
+    LinkedBoundedBuffer<Task> manager_queue;
+    LinkedBoundedBuffer<Task> worker_queue;
+    LinkedBoundedBuffer<Response> outputQueue;
+    long max_mem;
 
-    public State (long mem)
+    State (long mem)
     {
-        this.inputQueue= new LinkedBoundedBuffer<>();
+        this.manager_queue= new LinkedBoundedBuffer<>();
+        this.worker_queue= new LinkedBoundedBuffer<>();
         this.outputQueue= new LinkedBoundedBuffer<>();
         this.max_mem= mem;
     }

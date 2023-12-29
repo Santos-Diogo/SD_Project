@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import Shared.Defines;
 import ThreadTools.ThreadControl;
@@ -23,6 +25,8 @@ public class Main
         // get own memory
         long mem= Long.valueOf(args[2]);
 
+        
+
         try
         {
             // connect to the scalonator
@@ -33,9 +37,19 @@ public class Main
             // create state, reciever, worker and transmitter
             ThreadControl tc= new ThreadControl();
             State state= new State(mem);
-            new Thread (new Receiver(tc, state, input)).start();
-            new Thread (new WorkerManager(tc, state)).start();
-            new Thread (new Transmitter (tc, output, state)).start();
+
+            List<Thread> threads= new ArrayList<>();
+            
+            threads.add(new Thread (new Receiver(tc, state, input)));
+            threads.add(new Thread (new WorkerManager(tc, state)));
+            threads.add(new Thread (new Transmitter (tc, output, state)));
+
+            for (Thread t: threads)
+            {
+                t.start();
+            }
+
+            // terminate and cleanup
 
             // @TODO
             // when command== quit

@@ -19,6 +19,9 @@ public class ClientCom implements Runnable
 
     public void run() 
     {
-        while (this)
+        while (this.tc.getRunning())
+        {
+            
+        }
     }
 }

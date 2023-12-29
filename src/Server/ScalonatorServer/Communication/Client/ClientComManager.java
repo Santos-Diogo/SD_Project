@@ -2,6 +2,7 @@ package Server.ScalonatorServer.Communication.Client;
 
 import ThreadTools.ThreadControl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,7 +26,7 @@ public class ClientComManager implements Runnable
     public void run ()
     {
         ServerSocket server_socket;
-        List<Thread> threads;
+        List<Thread> threads= new ArrayList<>();
 
         try
         {
@@ -33,17 +34,13 @@ public class ClientComManager implements Runnable
             
             while (this.tc.getRunning())
             {
-                try
-                {
-                    // listen to connections
-                    Socket socket= server_socket.accept();
+                // listen to connections
+                Socket socket= server_socket.accept();
 
-                    // add a thread for each new connection
-                    Thread t= new Thread(new ClientCom (tc, socket, state));
-                    t.start();
-                    threads.add(t);
-                }
-                catch (InterruptedException e) {}
+                // add a thread for each new connection
+                Thread t= new Thread(new ClientCom (tc, socket, state));
+                t.start();
+                threads.add(t);
             }
         }
         catch (IOException e) 

@@ -5,7 +5,7 @@ import ThreadTools.ThreadControl;
 import java.util.ArrayList;
 import java.util.List;
 
-import Server.Shared.Defines;
+import Server.Packet.Task;
 
 public class WorkerManager implements Runnable
 {
@@ -22,22 +22,15 @@ public class WorkerManager implements Runnable
 
     public void run ()
     {
-        //create threads
-        for (int i= 0; i< Defines.MAX_WORKER_THREADS; i++)
-        {
-            this.thread_list.add(new Thread(new Worker(tc, state)));
-        }
-
         //wait for termination
-        tc.waitTerm();
-        for (Thread t: this.thread_list)
+        while (this.tc.getRunning())
         {
             try
             {
-                t.interrupt();
-                t.join();
+                Task t= this.state.manager_queue.take();
+                
             }
             catch (InterruptedException e) {}
-        }
+        }   
     }
 }

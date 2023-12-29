@@ -110,7 +110,7 @@ public class Handler
     }
 
 
-    void handle (String command)
+    public void handle (String command)
     {
         switch (command.split("\\s+")[0])
         {

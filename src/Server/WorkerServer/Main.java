@@ -15,26 +15,29 @@ import ThreadTools.ThreadControl;
 
 public class Main 
 {
-    static State state;
-    static Socket socket;
     public static void main (String[] args)
     {
         // get the scalonator's ip adress
         String scalonator_adr= args [1];
 
+        // get own memory
+        long mem= Long.valueOf(args[2]);
+
         try
         {
             // connect to the scalonator
-            socket= new Socket(scalonator_adr, Server.Shared.Defines.scalonator_worker_port);
+            Socket socket= new Socket(scalonator_adr, Server.Shared.Defines.scalonator_worker_port);
             DataInputStream input= new DataInputStream(socket.getInputStream());
             DataOutputStream output= new DataOutputStream(socket.getOutputStream());
 
-            // create reciever, worker and transmitter
+            // create state, reciever, worker and transmitter
             ThreadControl tc= new ThreadControl();
+            State state= new State(mem);
             new Thread (new Receiver(tc, state, input)).start();
             new Thread (new WorkerManager(tc, state)).start();
             new Thread (new Transmitter (tc, output, state)).start();
 
+            // @TODO
             // when command== quit
             // tc.setRunning(false);
         }

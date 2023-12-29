@@ -10,31 +10,27 @@ import Protocol.Protocol;
 public class Packet 
 {
     public Type type;
-    public int submitter;
-    public int task_number;
+    
 
     public enum Type
     {
+        REG,
         TASK,
         RESP
     }
 
-    public Packet (Type type, int submitter, int task_number)
+    public Packet (Type type)
     {
         this.type= type;
-        this.submitter= submitter;
-        this.task_number= task_number;
     }
 
     public void serialize (DataOutputStream out) throws IOException
     {
         out.writeInt(this.type.ordinal());
-        out.writeInt(this.submitter);
-        out.writeInt(this.task_number);
     }
 
     public static Packet deserialize (DataInputStream in) throws IOException
     {
-        return new Packet(Type.values()[in.readInt()], in.readInt(), in.readInt());
+        return new Packet(Type.values()[in.readInt()]);
     }
 }

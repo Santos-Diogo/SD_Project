@@ -5,12 +5,14 @@ import Shared.LinkedBoundedBuffer;
 
 public class State
 {
-    LinkedBoundedBuffer<Packet> inputQueue;
-    LinkedBoundedBuffer<Packet> outputQueue;
+    public LinkedBoundedBuffer<Packet> inputQueue;
+    public LinkedBoundedBuffer<Packet> outputQueue;
+    public long max_mem;
 
-    public State ()
+    public State (long mem)
     {
         this.inputQueue= new LinkedBoundedBuffer<>();
         this.outputQueue= new LinkedBoundedBuffer<>();
+        this.max_mem= mem;
     }
 }

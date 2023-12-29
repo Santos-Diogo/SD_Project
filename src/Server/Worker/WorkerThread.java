@@ -2,7 +2,6 @@ package Server.Worker;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import Protocol.Protocol;
 import Protocol.Exec.Response;
 import Server.State;
 import Server.Task.Task;

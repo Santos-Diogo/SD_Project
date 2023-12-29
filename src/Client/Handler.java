@@ -22,13 +22,11 @@ import Protocol.Status.StatusREQ;
 
 public class Handler
 {
-    State state;                // We handle commands and update the state
     DataInputStream in;
     DataOutputStream out;
 
-    public Handler (State state, Socket socket) throws IOException
+    public Handler (Socket socket) throws IOException
     {
-        this.state= state;
         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
     }
@@ -81,31 +79,28 @@ public class Handler
         }
     }
 
-    public boolean handleLogin (String username, String password)
+    public LoginReply handleLogin (String username, String password)
     {
         LoginRequest loginReq = new LoginRequest(username, password);
         try{
             loginReq.serialize(out);
             LoginReply loginRep = LoginReply.deserialize(in);
-            System.out.println(loginRep.message);
-            return loginRep.success;
+            return loginRep;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return new LoginReply(false, "Error in deserialization");
         }
     }
 
-    public boolean handleRegister (String username, String password)
+    public RegistoReply handleRegister (String username, String password)
     {
         RegistoRequest registerReq = new RegistoRequest(username, password);
         try{
             registerReq.serialize(out);
             RegistoReply registerRep = RegistoReply.deserialize(in);
-            System.out.println(registerRep.message);
-            return registerRep.success;
+            return registerRep;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            return new RegistoReply(false, "Error in deserialization");
         }
     }
 

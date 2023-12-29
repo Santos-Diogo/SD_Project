@@ -19,7 +19,6 @@ public class Handler implements Runnable
     private State server_state;
     private TaskMaker task_maker;
     private LinkedBoundedBuffer<Response> task_result;
-    private String user;
     private DataInputStream in;
     private DataOutputStream out;
     
@@ -30,7 +29,6 @@ public class Handler implements Runnable
         this.server_state= server_state;
         this.task_maker= new TaskMaker();
         this.task_result= this.server_state.registerSubmitter(this.task_maker.submitter);
-        user = null;
         in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
         out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
     }
@@ -76,14 +74,12 @@ public class Handler implements Runnable
             return;
         }
         server_state.addUser(packet.username, packet.password);
-        user = packet.username;
         try {
-            new RegistoReply(true, "User registered with success!\nWelcome " + user).serialize(out);
+            new RegistoReply(true, "User registered with success!").serialize(out);
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Registered user: Username - " + packet.username + "; Password - " + packet.password);
-        System.out.println("User '" + user + "' logged in");
     }
 
     private void handleLoginRequest (LoginRequest packet)
@@ -106,13 +102,12 @@ public class Handler implements Runnable
             }
             return;
         }
-        user = packet.username;
         try {
-            new LoginReply(true, "Welcome " +  user).serialize(out);
+            new LoginReply(true, "Successful login").serialize(out);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("User '" + user + "' logged in");
+        System.out.println("User '" + packet.username + "' logged in");
     }
 
     private void handle (Protocol packet)

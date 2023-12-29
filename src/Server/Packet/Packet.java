@@ -1,23 +1,21 @@
-package Server.Shared.Packet;
+package Server.Packet;
 
-import java.io.DataOutputStream;
-import java.io.IOError;
-import java.io.IOException;
+
 import java.io.DataInputStream;
-
-import Protocol.Protocol;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class Packet 
 {
-    public Type type;
-    
-
     public enum Type
     {
         REG,
         TASK,
-        RESP
+        GDRESP,
+        BDRESP
     }
+
+    public Type type;
 
     public Packet (Type type)
     {
@@ -31,6 +29,6 @@ public class Packet
 
     public static Packet deserialize (DataInputStream in) throws IOException
     {
-        return new Packet(Type.values()[in.readInt()]);
+        return new Packet (Type.values()[in.readInt()]);
     }
 }

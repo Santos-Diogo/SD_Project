@@ -1,12 +1,13 @@
 package Server.WorkerServer;
 
-import Server.Shared.Packet.Packet;
+import Protocol.Exec.Response;
+import Server.Packet.Task;
 import Shared.LinkedBoundedBuffer;
 
 public class State
 {
-    public LinkedBoundedBuffer<Packet> inputQueue;
-    public LinkedBoundedBuffer<Packet> outputQueue;
+    public LinkedBoundedBuffer<Task> inputQueue;
+    public LinkedBoundedBuffer<Response> outputQueue;
     public long max_mem;
 
     public State (long mem)

@@ -4,9 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Protocol {
-    
-
+public class Protocol 
+{
     public enum Type {
         REG_RQ,
         REG_RP,

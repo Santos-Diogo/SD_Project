@@ -3,8 +3,8 @@ package Server.WorkerServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import Protocol.Exec.Response;
 import ThreadTools.ThreadControl;
-import Server.Shared.Packet.Packet;
 
 public class Transmitter implements Runnable
 {
@@ -21,12 +21,23 @@ public class Transmitter implements Runnable
 
     public void run ()
     {
+        // register with own memory
+        try
+        {
+            output.writeLong(state.max_mem);
+        }
+        catch (IOException e)
+        {
+            System.err.println("Worker couldnt regist to the scalonator");
+            e.printStackTrace();
+        }
+        
         while (this.tc.getRunning())
         {
             try
             {
-                Packet p= this.state.outputQueue.take();
-                p.serialize(output);
+                Response r= this.state.outputQueue.take();
+                r.serialize(output);
                 output.flush();
             }
             catch (InterruptedException e){}

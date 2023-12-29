@@ -15,7 +15,9 @@ public class Task
      */
     public Task(int submitter, int num, int mem, byte[] arg) 
     {
+        this.submitter = submitter;
         this.num= num;
+        this.mem = mem;
         this.arg= arg;
     }
 }

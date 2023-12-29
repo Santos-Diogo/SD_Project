@@ -12,7 +12,6 @@ public class Main
 {
     private static State server_state;
     private static ServerSocket serverSocket;
-    private static WorkerManager worker_manager;
     private static ThreadControl tc;
 
     public static void main (String[] args)
@@ -20,9 +19,10 @@ public class Main
         int port = (args.length > 0) ? Integer.parseInt(args[0]) : Defines.serverport;
         try 
         {
+            tc = new ThreadControl();
             serverSocket = new ServerSocket(port);
             server_state= new State();
-            worker_manager= new WorkerManager(server_state, tc);
+            new Thread (new WorkerManager(server_state, tc)).start();
 
             System.out.println("Server port not specified, initializing server on port " + port);
             

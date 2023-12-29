@@ -1,13 +1,12 @@
 package Server;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.HashMap;
 import java.util.Map;
 import Protocol.Exec.Response;
 import Server.MemoryManager.MemoryManager;
 import Server.Task.Task;
+import Shared.LinkedBoundedBuffer;
 
 
 public class State 
@@ -15,8 +14,8 @@ public class State
     private ReentrantReadWriteLock mem_lock;                    // memory lock
     private ReentrantReadWriteLock task_res_lock;               // locks the taks results map
     private UserManager usermanager;                            // keeps the information about the users
-    private Map<Integer, BlockingQueue<Response>> task_results; // maps a submitter to his tasks results
-    public BlockingQueue<Task> taskQueue;                       // task queue
+    private Map<Integer, LinkedBoundedBuffer<Response>> task_results; // maps a submitter to his tasks results
+    public LinkedBoundedBuffer<Task> taskQueue;                       // task queue
 
     public State ()
     {
@@ -24,7 +23,7 @@ public class State
         this.task_res_lock= new ReentrantReadWriteLock();
         this.usermanager = new UserManager();
         this.task_results= new HashMap<>();
-        this.taskQueue= new LinkedBlockingQueue<>();
+        this.taskQueue= new LinkedBoundedBuffer<>();
     }
 
     /**
@@ -37,7 +36,11 @@ public class State
         try
         {
             this.task_res_lock.readLock().lock();
-            this.task_results.get(submitter).add(p);
+            this.task_results.get(submitter).put(p);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
         finally
         {
@@ -65,11 +68,11 @@ public class State
      * @param submitter
      * @return submitter's response queue
      */
-    public BlockingQueue<Response> registerSubmitter (int submitter)
+    public LinkedBoundedBuffer<Response> registerSubmitter (int submitter)
     {
         try
         {
-            BlockingQueue<Response> queue= new LinkedBlockingQueue<>();
+            LinkedBoundedBuffer<Response> queue= new LinkedBoundedBuffer<>();
             this.task_res_lock.writeLock().lock();
             this.task_results.put(submitter, queue);
             return queue;

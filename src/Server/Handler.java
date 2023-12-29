@@ -6,19 +6,19 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 import Protocol.Protocol;
 import Protocol.Authentication.*;
 import Protocol.Exec.Request;
 import Protocol.Exec.Response;
 import Protocol.Status.StatusREP;
 import Server.Task.TaskMaker;
+import Shared.LinkedBoundedBuffer;
 
 public class Handler implements Runnable
 {
     private State server_state;
     private TaskMaker task_maker;
-    private BlockingQueue<Response> task_result;
+    private LinkedBoundedBuffer<Response> task_result;
     private String user;
     private DataInputStream in;
     private DataOutputStream out;
@@ -40,7 +40,6 @@ public class Handler implements Runnable
     // Não aceita nada por parametro pois o StatusREQ (para já pelo menos) não tem qualquer conteúdo
     private void handleStatusRequest() 
     {
-        System.out.println("STATUS");
         long availableMemory = this.server_state.getAvailableMemory();
         int pendingTasks = this.server_state.taskQueue.size();
         try {
@@ -50,20 +49,18 @@ public class Handler implements Runnable
         }
     }
 
-    private Response handleExec (Request packet)
+    private void handleExec (Request packet)
     {
-        // send a task request
-        this.server_state.taskQueue.add(task_maker.newTask(packet.arg));
-        
-        // get a task result
         try
         {
-            return this.task_result.take();
+            // send a task request
+            this.server_state.taskQueue.put(task_maker.newTask(packet.arg, packet.mem));
+            // get a task result
+            this.task_result.take().serialize(out);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             System.out.println("Interrupted in handleExec return");
-            return null;
         }
     }
 
@@ -125,7 +122,7 @@ public class Handler implements Runnable
             switch (packet.type) 
             {
                 case EXEC_RQ:
-                    //handleExec(Request.deserialize(in));
+                    handleExec(Request.deserialize(in));
                     break;
                 case STATUS_RQ:
                     handleStatusRequest();

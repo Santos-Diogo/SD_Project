@@ -69,6 +69,8 @@ public class Main
                     registerClient();
                 else if (command.equals("login"))
                     loginClient();
+                else if (command.equals("quit"))
+                    return;
             }
     
             // Handle commands

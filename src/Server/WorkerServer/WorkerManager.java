@@ -25,14 +25,19 @@ public class WorkerManager implements Runnable
         //create threads
         for (int i= 0; i< Defines.MAX_WORKER_THREADS; i++)
         {
-            this.thread_list.add(new Thread(new Worker()));
+            this.thread_list.add(new Thread(new Worker(tc, state)));
         }
 
         //wait for termination
         tc.waitTerm();
         for (Thread t: this.thread_list)
         {
-            t.join();
+            try
+            {
+                t.interrupt();
+                t.join();
+            }
+            catch (InterruptedException e) {}
         }
     }
 }

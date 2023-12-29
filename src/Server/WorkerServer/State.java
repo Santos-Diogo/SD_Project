@@ -1,21 +1,16 @@
 package Server.WorkerServer;
 
 import Server.Shared.Packet.Packet;
-import java.util.concurrent.BlockingQueue;
+import Shared.LinkedBoundedBuffer;
 
-public class State implements Runnable
+public class State
 {
-    BlockingQueue<Packet> outputQueue;
-    BlockingQueue<Packet> inputQueue;
-
+    LinkedBoundedBuffer<Packet> inputQueue;
+    LinkedBoundedBuffer<Packet> outputQueue;
 
     public State ()
     {
-
-    }
-
-    public void run ()
-    {
-
+        this.inputQueue= new LinkedBoundedBuffer<>();
+        this.outputQueue= new LinkedBoundedBuffer<>();
     }
 }

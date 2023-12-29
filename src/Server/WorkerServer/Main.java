@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import Shared.Defines;
 import ThreadTools.ThreadControl;
@@ -18,8 +19,9 @@ public class Main
     static Socket socket;
     public static void main (String[] args)
     {
-        // GET FROM INPUT
-        InetAddress scalonator_adr;
+        // get the scalonator's ip adress
+        String scalonator_adr= args [1];
+
         try
         {
             // connect to the scalonator
@@ -27,11 +29,14 @@ public class Main
             DataInputStream input= new DataInputStream(socket.getInputStream());
             DataOutputStream output= new DataOutputStream(socket.getOutputStream());
 
-            // create reciever, executor and transmitter
+            // create reciever, worker and transmitter
             ThreadControl tc= new ThreadControl();
-            new Thread (new Transmitter (tc, output, state)).start();
             new Thread (new Receiver(tc, state, input)).start();
-            new Thread (new WorkerManager()).start();
+            new Thread (new WorkerManager(tc, state)).start();
+            new Thread (new Transmitter (tc, output, state)).start();
+
+            // when command== quit
+            // tc.setRunning(false);
         }
         catch (IOException e)
         {

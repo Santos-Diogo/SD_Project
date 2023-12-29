@@ -26,8 +26,9 @@ public class Receiver implements Runnable
             try
             {
                 Packet p= Packet.deserialize(this.input);
-                this.state.inputQueue.add(p);
+                this.state.inputQueue.put(p);
             }
+            catch (InterruptedException e) {}
             catch (IOException e) 
             {
                 e.printStackTrace();

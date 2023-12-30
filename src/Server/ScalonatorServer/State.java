@@ -12,21 +12,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class State 
 {
-    public class ClientInfo
-    {
-        public int client_num;
-        public LinkedBoundedBuffer<Protocol> queue;
-
-        public ClientInfo (int num, LinkedBoundedBuffer<Protocol> queue)
-        {
-            this.client_num= num;
-            this.queue= queue;
-        }
-    }
-
-    public LinkedBoundedBuffer<Protocol> to_scalonator;
+    public LinkedBoundedBuffer<Packet> to_scalonator;
     public LinkedBoundedBuffer<Task> to_worker;
-
 
     private ReadWriteLock map_lock;
     private int client_inc;
@@ -41,19 +28,32 @@ public class State
         this.map_to_client= new HashMap<>();
     }
 
-    public ClientInfo registerMap ()
+    public int registerMap()
     {
         try
         {
             LinkedBoundedBuffer<Protocol> to_client= new LinkedBoundedBuffer<>();
             map_lock.writeLock().lock();
             this.map_to_client.put(client_inc, to_client);
-            return new ClientInfo(client_inc, to_client);
+            return this.client_inc;
         }
         finally
         {
             this.client_inc++;
             this.map_lock.writeLock().unlock();
+        }
+    }
+
+    public LinkedBoundedBuffer<Protocol> getMap (int submitter)
+    {
+        try
+        {
+            this.map_lock.readLock().lock();
+            return this.map_to_client.get(submitter);
+        }
+        finally
+        {
+            this.map_lock.readLock().unlock();
         }
     }
 }

@@ -46,8 +46,8 @@ public class Worker implements Runnable
         {
             try
             {
-                Task t= this.state.worker_queue.take();
-                this.state.outputQueue.put(exec(t));
+                Task t= this.state.input_queue.take();
+                this.state.output_queue.put(exec(t));
             }
             catch (InterruptedException e) {}
         }

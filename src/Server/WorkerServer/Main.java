@@ -4,19 +4,30 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import Shared.Defines;
 import ThreadTools.ThreadControl;
 
+
 public class Main 
 {
+    static Scanner scanner = new Scanner (System.in);
+
+    public static String commandRequest ()
+    {
+        System.out.println("\nType your desired command:");
+        System.out.println("quit - terminate the exec");
+        System.out.print("Command: ");
+        return scanner.nextLine();
+    }
+
     public static void main (String[] args)
     {
         // get the scalonator's ip adress
@@ -24,8 +35,6 @@ public class Main
 
         // get own memory
         long mem= Long.valueOf(args[2]);
-
-        
 
         try
         {
@@ -49,11 +58,22 @@ public class Main
                 t.start();
             }
 
+            // wait for termination command
+            while (commandRequest()!= "quit") {} 
+            
             // terminate and cleanup
+            tc.setRunning(false);
+            for (Thread t: threads)
+            {
+                t.interrupt();
+                try
+                {
+                    t.join();
+                }
+                catch (InterruptedException e) {}
+            }
 
-            // @TODO
-            // when command== quit
-            // tc.setRunning(false);
+            socket.close();
         }
         catch (IOException e)
         {

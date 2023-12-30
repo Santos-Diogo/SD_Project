@@ -26,7 +26,7 @@ public class Receiver implements Runnable
             try
             {
                 Task t= Task.deserialize(this.input);
-                this.state.manager_queue.put(t);
+                this.state.input_queue.put(t);
             }
             catch (InterruptedException e) {}
             catch (IOException e) 

@@ -17,7 +17,7 @@ public class ClientComManager implements Runnable
     ThreadControl tc;
     State state;
 
-    ClientComManager (ThreadControl tc, State state)
+    public ClientComManager (ThreadControl tc, State state)
     {
         this.tc= new ThreadControl();
         this.state= state;
@@ -37,17 +37,27 @@ public class ClientComManager implements Runnable
                 // listen to connections
                 Socket socket= server_socket.accept();
 
-                // add a thread for each new connection
-                Thread t= new Thread(new ClientCom (tc, socket, state));
-                t.start();
-                threads.add(t);
+                // add a transmitter and receiver for each new connection
+                threads.add(new Thread(new ClientReceiver(tc, socket, state)));
+                threads.add(new Thread(new ClientTransmitter(tc, socket, state)));
             }
         }
         catch (IOException e) 
         {
             e.printStackTrace();
         }
-
-        // stop all threads
+        finally
+        {
+            // stop all threads
+            for (Thread t: threads)
+            {
+                t.interrupt();
+                try
+                {
+                    t.join();
+                }
+                catch (InterruptedException e) {}
+            }
+        }
     }
 }

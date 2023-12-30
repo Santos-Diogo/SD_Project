@@ -1,41 +1,38 @@
 package Server.ScalonatorServer.Communication.Client;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import Server.ScalonatorServer.State;
 import ThreadTools.ThreadControl;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-
-import Protocol.Protocol;
-import Protocol.Exec.Request;
-import Server.ScalonatorServer.State;
-
-class ClientReceiver implements Runnable
+public class ClientTransmitter implements Runnable
 {
     private ThreadControl tc;
-    private DataInputStream input;
     private State state;
+    private DataOutputStream out;
 
-    ClientReceiver (ThreadControl tc, DataInputStream input, State state)
+    ClientTransmitter (ThreadControl tc, State state, DataOutputStream out)
     {
         this.tc= tc;
-        this.input= input;
         this.state= state;
+        this.out= out;
     }
 
     public void run ()
     {
         while (this.tc.getRunning())
         {
+            
             try
             {
-                this.state.to_scalonator.put(Protocol.deserialize(input));
+                this.state.to_client.take().serialize(out);
             }
+            catch (InterruptedException e) {}
             catch (IOException e)
             {
                 e.printStackTrace();
             }
         }
-    }    
+    }   
 }

@@ -2,10 +2,9 @@ package Server.WorkerServer;
 
 import ThreadTools.ThreadControl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import Server.Packet.Task;
+import Server.Shared.Defines;
 
 public class WorkerManager implements Runnable
 {
@@ -17,20 +16,14 @@ public class WorkerManager implements Runnable
     {
         this.tc= tc;
         this.state= state;
-        this.thread_list= new ArrayList<>();
     }
 
     public void run ()
     {
-        //wait for termination
-        while (this.tc.getRunning())
+        // create threads
+        for (int i= 0; i< Defines.MAX_WORKER_THREADS; i++)
         {
-            try
-            {
-                Task t= this.state.manager_queue.take();
-                
-            }
-            catch (InterruptedException e) {}
-        }   
+            new Thread(new Worker(tc, state)).start();
+        }
     }
 }

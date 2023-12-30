@@ -6,16 +6,14 @@ import Shared.LinkedBoundedBuffer;
 
 class State
 {
-    LinkedBoundedBuffer<Task> manager_queue;
-    LinkedBoundedBuffer<Task> worker_queue;
-    LinkedBoundedBuffer<Response> outputQueue;
+    LinkedBoundedBuffer<Task> input_queue;
+    LinkedBoundedBuffer<Response> output_queue;
     long max_mem;
 
     State (long mem)
     {
-        this.manager_queue= new LinkedBoundedBuffer<>();
-        this.worker_queue= new LinkedBoundedBuffer<>();
-        this.outputQueue= new LinkedBoundedBuffer<>();
+        this.input_queue= new LinkedBoundedBuffer<>();
+        this.output_queue= new LinkedBoundedBuffer<>();
         this.max_mem= mem;
     }
 }

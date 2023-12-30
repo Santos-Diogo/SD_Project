@@ -49,9 +49,8 @@ public class Response extends Protocol
 
     public static Response deserialize (DataInputStream in) throws IOException
     {
-        Protocol packet = Protocol.deserialize(in);
         int n_job = in.readInt();
         boolean success = in.readBoolean();
-        return new Response(success, n_job, packet);
+        return new Response(success, n_job);
     }
 }

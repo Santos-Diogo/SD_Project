@@ -29,7 +29,7 @@ public class GoodResponse extends Response
         out.flush();
     }
 
-    public static GoodResponse deserialize (DataInputStream in, Response packet) throws IOException
+    public static GoodResponse deserialize (DataInputStream in) throws IOException
     {
         int length = in.readInt();
         byte[] response = new byte[length];

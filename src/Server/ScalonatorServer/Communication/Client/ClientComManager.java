@@ -39,9 +39,9 @@ public class ClientComManager implements Runnable
                 Socket socket= server_socket.accept();
 
                 // add a transmitter and receiver for each new connection
-                ClientInfo info= this.state.registerMap();
-                threads.add(new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state, info.client_num)));
-                threads.add(new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), info.queue)));
+                int info= this.state.registerMapClient();
+                threads.add(new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state.to_scalonator, info)));
+                threads.add(new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), this.state.getMapClient(info))));
             }
         }
         catch (IOException e) 

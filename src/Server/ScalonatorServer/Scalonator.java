@@ -24,7 +24,7 @@ public class Scalonator implements Runnable {
     private void handleRegReq (Packet packet)
     {
         RegistoRequest request = (RegistoRequest) packet.protocol;
-        LinkedBoundedBuffer<Protocol> client = state.getMap(packet.submitter);
+        LinkedBoundedBuffer<Protocol> client = state.getMapClient(packet.submitter);
         if (state.usermanager.existsUser(request.username))
         {
             try{
@@ -46,7 +46,7 @@ public class Scalonator implements Runnable {
     private void handleLoginReq (Packet packet)
     {
         LoginRequest request = (LoginRequest) packet.protocol;
-        LinkedBoundedBuffer<Protocol> client = state.getMap(packet.submitter);
+        LinkedBoundedBuffer<Protocol> client = state.getMapClient(packet.submitter);
         if (!state.usermanager.existsUser(request.username))
         {
             try{

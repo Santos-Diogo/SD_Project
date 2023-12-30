@@ -25,7 +25,6 @@ public class State
     }
 
     public LinkedBoundedBuffer<Packet> to_scalonator;
-    public LinkedBoundedBuffer<Packet> to_worker;
     public UserManager usermanager;
 
     private ReadWriteLock map_client_lock;
@@ -38,7 +37,6 @@ public class State
     public State ()
     {
         this.to_scalonator= new LinkedBoundedBuffer<>();
-        this.to_worker= new LinkedBoundedBuffer<>();
         this.usermanager = new UserManager();
         this.map_client_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
@@ -80,7 +78,7 @@ public class State
     public int getMemoryAvailable ()
     {
         map_worker_lock.readLock().lock();
-        Collection<Integer> mems = map_to_workerMem.values();
+        Collection<Integer> mems = map_to_worker.values();
         map_worker_lock.readLock().unlock();
         int sum = 0;
         for(Integer i : mems)
@@ -88,18 +86,7 @@ public class State
         return sum;
     }
 
-    public int getMemoryAvailable ()
-    {
-        map_worker_lock.readLock().lock();
-        Collection<Integer> mems = map_to_workerMem.values();
-        map_worker_lock.readLock().unlock();
-        int sum = 0;
-        for(Integer i : mems)
-            sum += i;
-        return sum;
-    }
-
-    public LinkedBoundedBuffer<Protocol> getMapClient (int submitter)
+    public LinkedBoundedBuffer<Protocol> getQueueClient (int submitter)
     {
         try
         {

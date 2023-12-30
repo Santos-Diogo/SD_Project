@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class State 
 {
-    public class ClientInfo ()
+    class ClientInfo ()
     {
         int client_num;
         LinkedBoundedBuffer<Protocol> queue;

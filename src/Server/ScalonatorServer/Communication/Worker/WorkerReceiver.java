@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import Protocol.Protocol;
+import Server.Packet.Packet;
 import Server.ScalonatorServer.State;
 import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
@@ -27,9 +28,9 @@ public class WorkerReceiver implements Runnable
         {
             try
             {
-                Protocol p= Protocol.deserialize(input);
-                LinkedBoundedBuffer<Protocol> output= this.state.getMap(p.);
-                output.put(p);
+                Packet p= Packet.deserialize(input);
+                LinkedBoundedBuffer<Protocol> output= this.state.getMap(p.submitter);
+                output.put(p.protocol);
             }
             catch (InterruptedException e) {}
             catch (IOException e)

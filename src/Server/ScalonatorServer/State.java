@@ -25,7 +25,7 @@ public class State
 
     public LinkedBoundedBuffer<Packet> to_scalonator;
     public LinkedBoundedBuffer<Packet> to_worker;
-    private UserManager usermanager;
+    public UserManager usermanager;
 
     private ReadWriteLock map_lock;
     private int client_inc;
@@ -39,21 +39,6 @@ public class State
         this.map_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
         this.map_to_client= new HashMap<>();
-    }
-
-    public boolean existsUser (String username)
-    {
-        return usermanager.existsUser(username);
-    }
-
-    public void addUser (String username, String password)
-    {
-        usermanager.addUser(username, password);
-    }
-
-    public boolean checkPassword (String username, String password)
-    {
-        return usermanager.checkPassword(username, password);
     }
 
     public int registerMap ()

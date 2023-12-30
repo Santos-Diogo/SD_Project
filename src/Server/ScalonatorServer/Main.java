@@ -11,9 +11,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 
 import Server.ScalonatorServer.Communication.Client.ClientComManager;
-import Server.WorkerServer.Receiver;
-import Server.WorkerServer.Transmitter;
-import Server.WorkerServer.WorkerManager;
+import Server.ScalonatorServer.Communication.Worker.WorkerComManager;
 import ThreadTools.ThreadControl;
 
 public class Main

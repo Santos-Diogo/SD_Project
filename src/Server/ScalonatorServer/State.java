@@ -138,4 +138,17 @@ public class State
             this.map_worker_lock.readLock().unlock();
         }
     }
+
+    public void removeWorker (int worker)
+    {
+        try
+        {
+            this.map_worker_lock.writeLock().lock();
+            this.map_to_worker.remove(worker);
+        }
+        finally
+        {
+            this.map_worker_lock.writeLock().unlock();
+        }
+    }
 }

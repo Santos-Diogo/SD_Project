@@ -1,25 +1,24 @@
 package Server.ScalonatorServer.Communication.Worker;
 
-import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
-import Protocol.Protocol;
 import Server.Packet.Packet;
-import Server.ScalonatorServer.State;
 import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
-public class WorkerReceiver implements Runnable
+public class WorkerTransmitter implements Runnable
 {
-    ThreadControl tc;
-    DataInputStream input;
-    State state;
+    private ThreadControl tc;
+    private LinkedBoundedBuffer<Packet> input;
+    private DataOutputStream output;
 
-    WorkerReceiver (ThreadControl tc, DataInputStream input, State state)
+    WorkerTransmitter (ThreadControl tc, LinkedBoundedBuffer<Packet> input, DataOutputStream output)
     {
         this.tc= tc;
         this.input= input;
-        this.state= state;
+        this.output= output;
     }
 
     public void run ()
@@ -28,9 +27,9 @@ public class WorkerReceiver implements Runnable
         {
             try
             {
-                Packet p= Packet.deserialize(input);
-                LinkedBoundedBuffer<Protocol> output= this.state.getMap(p.submitter);
-                output.put(p.protocol);
+                Packet p= this.input.take();
+                p.serialize(output);
+                output.flush();
             }
             catch (InterruptedException e) {}
             catch (IOException e)
@@ -38,5 +37,5 @@ public class WorkerReceiver implements Runnable
                 e.printStackTrace();
             }
         }
-    }    
+    }
 }

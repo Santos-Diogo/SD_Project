@@ -25,7 +25,7 @@ public class State
         {
             this.available_mem= available_mem;
             this.maxCapacity = available_mem;
-            this.packet_in_exec = new HashMap<>();
+            this.packet_in_exec= new HashMap<>();
             this.queue= new LinkedBoundedBuffer<>();
         }
     }
@@ -143,7 +143,7 @@ public class State
         try
         {
             this.map_worker_lock.writeLock().lock();
-            WorkerData data= this.map_to_worker.remove(worker);
+            WorkerData data= this.map_to_worker.get(worker);
             Collection<Packet> packets= data.packet_in_exec.values();
             for (Packet p: packets)
             {
@@ -153,6 +153,7 @@ public class State
                 }
                 catch (InterruptedException e) {}
             }
+            this.map_to_worker.remove(worker);
         }
         finally
         {

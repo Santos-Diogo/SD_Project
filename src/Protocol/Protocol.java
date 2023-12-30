@@ -32,14 +32,12 @@ public class Protocol
     
     public void serialize (DataOutputStream out) throws IOException
     {
-        System.out.println(type.ordinal());
         out.writeInt(type.ordinal());
     }   
 
     public static Protocol deserialize (DataInputStream in) throws IOException
     {
         int type = in.readInt();
-        System.out.println(type);
         return new Protocol(Type.values()[type]);
     }
 }

@@ -7,7 +7,6 @@ import Shared.LinkedBoundedBuffer;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -26,6 +25,7 @@ public class State
         {
             this.available_mem= available_mem;
             this.maxCapacity = available_mem;
+            this.packet_in_exec = new HashMap<>();
             this.queue= new LinkedBoundedBuffer<>();
         }
     }
@@ -72,8 +72,6 @@ public class State
     {
         try
         {
-            System.out.println(mem);
-            System.out.println(worker_inc);
             map_worker_lock.writeLock().lock();
             map_to_worker.put(worker_inc, new WorkerData(mem));
             return this.worker_inc;

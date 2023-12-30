@@ -41,7 +41,7 @@ public class WorkerComManager implements Runnable
                 int number= this.state.registerMapWorker(mem);
                 LinkedBoundedBuffer<Packet> queue= this.state.getQueueWorker(number);
 
-                new Thread(new WorkerReceiver(tc, socket_input, state)).start();
+                new Thread(new WorkerReceiver(tc, socket_input, state, number)).start();
                 new Thread(new WorkerTransmitter(tc, queue, socket_output)).start();
             }
             server_socket.close();

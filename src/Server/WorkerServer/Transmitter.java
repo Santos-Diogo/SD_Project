@@ -36,8 +36,7 @@ public class Transmitter implements Runnable
         {
             try
             {
-                Response r= this.state.output_queue.take();
-                r.serialize(output);
+                this.state.output_queue.take().serialize(output);
                 output.flush();
             }
             catch (InterruptedException e){}

@@ -56,7 +56,7 @@ public class State
         return usermanager.checkPassword(username, password);
     }
 
-    public ClientInfo registerMap ()
+    public int registerMap ()
     {
         try
         {

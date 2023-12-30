@@ -32,7 +32,6 @@ public class WorkerComManager implements Runnable
                     Socket s= server_socket.accept();
                     new Thread ();
                 }
-                catch (InterruptedException e) {}
             }
             server_socket.close();
         }

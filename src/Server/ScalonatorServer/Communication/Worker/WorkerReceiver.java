@@ -27,8 +27,11 @@ public class WorkerReceiver implements Runnable
         {
             try
             {
-                LinkedBoundedBuffer<Protocol> output= this.state.
+                Protocol p= Protocol.deserialize(input);
+                LinkedBoundedBuffer<Protocol> output= this.state.getMap(p.);
+                output.put(p);
             }
+            catch (InterruptedException e) {}
             catch (IOException e)
             {
                 e.printStackTrace();

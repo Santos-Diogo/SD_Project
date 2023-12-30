@@ -30,6 +30,7 @@ public class WorkerComManager implements Runnable
                 try
                 {
                     Socket s= server_socket.accept();
+                    //start transmitter and receiver
                     new Thread ();
                 }
             }

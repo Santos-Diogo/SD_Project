@@ -9,7 +9,7 @@ import Server.Packet.Packet;
 import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
-public class Scalonator {
+public class Scalonator implements Runnable {
     
     private State state;
     private ThreadControl tc;
@@ -73,18 +73,25 @@ public class Scalonator {
         System.out.println("User '" + request.username + "' logged in");
     }
 
+    private void handleStatusReq (Packet packet)
+    {
+        int memoryAvailable = state.getMemoryAvailable();
+    }
+
 
     private void handle (Packet packet) throws InterruptedException
     {
         switch (packet.protocol.type) {
-            case REG_RQ:
-                handleRegReq(packet);
+            case EXEC_RQ:
+                state.to_worker.put(packet);
                 break;
+            case STATUS_RQ:
+                handleStatusReq(packet); 
             case LG_IN_RQ:
                 handleLoginReq(packet);
                 break;
-            case EXEC_RQ:
-                state.to_worker.put(packet);
+            case REG_RQ:
+                handleRegReq(packet);
                 break;
             default:
                 break;

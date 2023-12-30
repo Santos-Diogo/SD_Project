@@ -4,6 +4,7 @@ import Protocol.Protocol;
 import Server.Packet.Packet;
 import Shared.LinkedBoundedBuffer;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -74,6 +75,17 @@ public class State
             this.worker_inc++;
             map_worker_lock.writeLock().unlock();
         }
+    }
+
+    public int getMemoryAvailable ()
+    {
+        map_worker_lock.readLock().lock();
+        Collection<Integer> mems = map_to_workerMem.values();
+        map_worker_lock.readLock().unlock();
+        int sum = 0;
+        for(Integer i : mems)
+            sum += i;
+        return sum;
     }
 
     public LinkedBoundedBuffer<Protocol> getMap (int submitter)

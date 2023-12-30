@@ -1,7 +1,5 @@
 package Server.ScalonatorServer;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +11,6 @@ import Protocol.Authentication.RegistoRequest;
 import Protocol.Exec.Request;
 import Server.Packet.Packet;
 import Server.ScalonatorServer.State.WorkerData;
-import Server.WorkerServer.Worker;
 import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
@@ -32,7 +29,7 @@ public class Scalonator implements Runnable {
     private void handleRegReq (Packet packet)
     {
         RegistoRequest request = (RegistoRequest) packet.protocol;
-        LinkedBoundedBuffer<Protocol> client = state.getMapClient(packet.submitter);
+        LinkedBoundedBuffer<Protocol> client = state.getQueueClient(packet.submitter);
         if (state.usermanager.existsUser(request.username))
         {
             try{
@@ -54,7 +51,7 @@ public class Scalonator implements Runnable {
     private void handleLoginReq (Packet packet)
     {
         LoginRequest request = (LoginRequest) packet.protocol;
-        LinkedBoundedBuffer<Protocol> client = state.getMapClient(packet.submitter);
+        LinkedBoundedBuffer<Protocol> client = state.getQueueClient(packet.submitter);
         if (!state.usermanager.existsUser(request.username))
         {
             try{

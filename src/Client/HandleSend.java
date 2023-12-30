@@ -49,15 +49,18 @@ public class HandleSend implements Runnable
 
     private void handleExec(String file, Integer mem)
     {
+        Request request = null;
         try {
             byte[] job = getContent(file);
+            request = new Request(job, mem);
             l.lock();
-            new Request(job, mem).serialize(out);
+            request.serialize(out);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             l.unlock();
         }
+        System.out.println("Job #" + request.n_job + " submitted");
     }
 
     public void handle (String command)

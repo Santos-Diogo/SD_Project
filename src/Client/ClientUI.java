@@ -58,14 +58,12 @@ public class ClientUI {
         scanner.nextLine();
     }
 
-    private static String command_request() 
+    private static void command_request() 
     {
         System.out.println("\nType your desired command:\n");
         System.out.println("status - Memory available and number of pending tasks");
         System.out.println("exec <file> <mem> - Request to execute task based on <file> that uses <mem> memory in bytes");
         System.out.println("quit - Exit the program");
-        System.out.print("\nCommand: ");
-        return scanner.nextLine();
     }
 
     private static void execute ()
@@ -76,8 +74,9 @@ public class ClientUI {
         System.out.print("Directory: ");
         String scannerDir = scanner.nextLine();
         client.setWrittingDir((scannerDir.equals("")) ? System.getProperty("user.dir") : scannerDir);
+        command_request();
         String command;
-        while (!(command = command_request()).equals("quit")) 
+        while (!(command = scanner.nextLine()).equals("quit")) 
         {
             client.handle(command);
         } 

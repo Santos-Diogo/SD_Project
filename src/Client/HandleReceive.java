@@ -3,8 +3,6 @@ package Client;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import Protocol.Protocol;
 import Protocol.Exec.GoodResponse;
@@ -16,8 +14,6 @@ public class HandleReceive implements Runnable{
     
     private DataInputStream in;
     private ThreadControl tc;
-    private Lock l;
-    private int outputNumber;
     private String writtingDir; 
 
 
@@ -25,8 +21,6 @@ public class HandleReceive implements Runnable{
     {
         this.in = in;
         this.tc = tc;
-        this.l = new ReentrantLock();
-        this.outputNumber = 0;
         this.writtingDir = dir;
     }
 
@@ -48,10 +42,7 @@ public class HandleReceive implements Runnable{
         try {
             GoodResponse response = GoodResponse.deserialize(in);
             new Thread(() -> {
-                l.lock();
-                int thisFile = outputNumber++;
-                l.unlock();
-                String finalDir = writtingDir + "/output_" + thisFile;
+                String finalDir = writtingDir + "/output_" + response.n_job;
                 try(FileOutputStream fos = new FileOutputStream(finalDir)) {
                     fos.write(response.response);
                 } catch (IOException e) {

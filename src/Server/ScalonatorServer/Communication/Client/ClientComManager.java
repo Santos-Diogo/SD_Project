@@ -4,14 +4,17 @@ import ThreadTools.ThreadControl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Protocol.Protocol;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import Server.ScalonatorServer.State.ClientInfo;
 
 import Server.ScalonatorServer.State;
+import Shared.LinkedBoundedBuffer;
 
 public class ClientComManager implements Runnable
 {
@@ -39,9 +42,11 @@ public class ClientComManager implements Runnable
                 Socket socket= server_socket.accept();
 
                 // add a transmitter and receiver for each new connection
-                ClientInfo info= this.state.registerMap();
-                threads.add(new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state, info.client_num)));
-                threads.add(new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), info.queue)));
+                int num= this.state.registerMapClient();
+                LinkedBoundedBuffer<Protocol> queue= this.state.getQueueClient(num);
+
+                threads.add(new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state.to_scalonator, num)));
+                threads.add(new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), queue)));
             }
         }
         catch (IOException e) 

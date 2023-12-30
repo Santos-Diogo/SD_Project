@@ -4,13 +4,9 @@ import ThreadTools.ThreadControl;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
 
 import Protocol.Protocol;
-import Protocol.Exec.Request;
 import Server.Packet.Packet;
-import Server.ScalonatorServer.State;
 import Shared.LinkedBoundedBuffer;
 
 class ClientReceiver implements Runnable
@@ -34,10 +30,9 @@ class ClientReceiver implements Runnable
         {
             try
             {
-                // !!! TODO
-                hfkjsdfhks hdkjf kdjshfkj hdsf ;
-                this.state.to_scalonator.put(Protocol.deserialize(input));
+                this.output.put(new Packet(Protocol.deserialize(input), my_num));
             }
+            catch (InterruptedException e) {}
             catch (IOException e)
             {
                 e.printStackTrace();

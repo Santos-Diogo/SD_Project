@@ -29,7 +29,7 @@ public class WorkerReceiver implements Runnable
             try
             {
                 Packet p= Packet.deserialize(input);
-                LinkedBoundedBuffer<Protocol> output= this.state.getMap(p.submitter);
+                LinkedBoundedBuffer<Protocol> output= this.state.getQueueClient(p.submitter);
                 output.put(p.protocol);
             }
             catch (InterruptedException e) {}

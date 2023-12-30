@@ -75,15 +75,19 @@ public class Scalonator implements Runnable {
 
     private void handleStatusReq (Packet packet)
     {
-        int memoryAvailable = state.getMemoryAvailable();
+        int memoryAvailable = state.getMemoryAvailable();   
     }
 
+    private void scalonate (Packet packet)
+    {
+
+    }
 
     private void handle (Packet packet) throws InterruptedException
     {
         switch (packet.protocol.type) {
             case EXEC_RQ:
-                state.to_worker.put(packet);
+                scalonate(packet);
                 break;
             case STATUS_RQ:
                 handleStatusReq(packet); 

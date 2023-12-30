@@ -78,11 +78,11 @@ public class State
     public int getMemoryAvailable ()
     {
         map_worker_lock.readLock().lock();
-        Collection<Integer> mems = map_to_worker.values();
+        Collection<WorkerData> mems = map_to_worker.values();
         map_worker_lock.readLock().unlock();
         int sum = 0;
-        for(Integer i : mems)
-            sum += i;
+        for(WorkerData wd : mems)
+            sum += wd.available_mem;
         return sum;
     }
 

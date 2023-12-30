@@ -63,12 +63,25 @@ public class State
             LinkedBoundedBuffer<Protocol> to_client= new LinkedBoundedBuffer<>();
             map_lock.writeLock().lock();
             this.map_to_client.put(client_inc, to_client);
-            return new ClientInfo(client_inc, to_client);
+            return this.client_inc;
         }
         finally
         {
             this.client_inc++;
             this.map_lock.writeLock().unlock();
+        }
+    }
+
+    public LinkedBoundedBuffer<Protocol> getMap (int submitter)
+    {
+        try
+        {
+            this.map_lock.readLock().lock();
+            return this.map_to_client.get(submitter);
+        }
+        finally
+        {
+            this.map_lock.readLock().unlock();
         }
     }
 }

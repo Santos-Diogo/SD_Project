@@ -1,12 +1,12 @@
 package Server.ScalonatorServer;
 
-import java.io.IOException;
-
+import Protocol.Protocol;
 import Protocol.Authentication.LoginReply;
 import Protocol.Authentication.LoginRequest;
 import Protocol.Authentication.RegistoReply;
 import Protocol.Authentication.RegistoRequest;
 import Server.Packet.Packet;
+import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
 public class Scalonator {
@@ -21,52 +21,56 @@ public class Scalonator {
         this.tc = tc;
     }
 
-    private void handleRegReq (RegistoRequest packet)
+    private void handleRegReq (Packet packet)
     {
-        if (state.usermanager.existsUser(packet.username))
+        RegistoRequest request = (RegistoRequest) packet.protocol;
+        LinkedBoundedBuffer<Protocol> client = state.getMap(packet.submitter);
+        if (state.usermanager.existsUser(request.username))
         {
             try{
-                new RegistoReply(false, "Username already exists.").serialize(out);
-            } catch (IOException e) {
+                client.put(new RegistoReply(false, "Username already exists."));
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return;
         }
-        state.usermanager.addUser(packet.username, packet.password);
+        state.usermanager.addUser(request.username, request.password);
         try {
-            new RegistoReply(true, "User registered with success!").serialize(out);
-        } catch (IOException e) {
+            client.put(new RegistoReply(true, "User registered with success!"));
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Registered user: Username - " + packet.username + "; Password - " + packet.password);
+        System.out.println("Registered user: Username - " + request.username + "; Password - " + request.password);
     }
 
     private void handleLoginReq (Packet packet)
     {
-        if (!state.usermanager.existsUser(packet.username))
+        LoginRequest request = (LoginRequest) packet.protocol;
+        LinkedBoundedBuffer<Protocol> client = state.getMap(packet.submitter);
+        if (!state.usermanager.existsUser(request.username))
         {
             try{
-                new LoginReply(false, "Username does not exist.").serialize(out);
-            } catch (IOException e) {
+                client.put(new LoginReply(false, "Username does not exist."));
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return;
         }
-        if (!state.usermanager.checkPassword(packet.username, packet.password))
+        if (!state.usermanager.checkPassword(request.username, request.password))
         {
             try{
-                new LoginReply(false, "Password Incorrect!").serialize(out);
-            } catch (IOException e) {
+                client.put(new LoginReply(false, "Password Incorrect!"));
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return;
         }
         try {
-            new LoginReply(true, "Successful login").serialize(out);
-        } catch (IOException e) {
+            client.put(new LoginReply(true, "Successful login"));
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("User '" + packet.username + "' logged in");
+        System.out.println("User '" + request.username + "' logged in");
     }
 
 
@@ -74,10 +78,10 @@ public class Scalonator {
     {
         switch (packet.protocol.type) {
             case REG_RQ:
-                handleRegReq();
+                handleRegReq(packet);
                 break;
             case LG_IN_RQ:
-                handleLoginReq();
+                handleLoginReq(packet);
                 break;
             case EXEC_RQ:
                 state.to_worker.put(packet);

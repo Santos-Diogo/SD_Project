@@ -27,17 +27,21 @@ public class State
     public LinkedBoundedBuffer<Packet> to_worker;
     public UserManager usermanager;
 
-    private ReadWriteLock map_lock;
+    private ReadWriteLock map_client_lock;
+    private ReadWriteLock map_worker_lock;
     private int client_inc;
+    private int worker_inc;
     private Map<Integer, LinkedBoundedBuffer<Protocol>> map_to_client;
+    private Map<Integer, Integer> map_to_workerMem;
 
     public State ()
     {
         this.to_scalonator= new LinkedBoundedBuffer<>();
         this.to_worker= new LinkedBoundedBuffer<>();
         this.usermanager = new UserManager();
-        this.map_lock= new ReentrantReadWriteLock();
+        this.map_client_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
+        this.worker_inc = 0;
         this.map_to_client= new HashMap<>();
     }
 
@@ -46,14 +50,29 @@ public class State
         try
         {
             LinkedBoundedBuffer<Protocol> to_client= new LinkedBoundedBuffer<>();
-            map_lock.writeLock().lock();
+            map_client_lock.writeLock().lock();
             this.map_to_client.put(client_inc, to_client);
             return this.client_inc;
         }
         finally
         {
             this.client_inc++;
-            this.map_lock.writeLock().unlock();
+            this.map_client_lock.writeLock().unlock();
+        }
+    }
+
+    public int registerMapWorker (int mem)
+    {
+        map_worker_lock.writeLock().lock();
+        try
+        {
+            map_to_workerMem.put(worker_inc, mem);
+            return this.worker_inc;
+        } 
+        finally 
+        {
+            this.worker_inc++;
+            map_worker_lock.writeLock().unlock();
         }
     }
 
@@ -61,12 +80,12 @@ public class State
     {
         try
         {
-            this.map_lock.readLock().lock();
+            this.map_client_lock.readLock().lock();
             return this.map_to_client.get(submitter);
         }
         finally
         {
-            this.map_lock.readLock().unlock();
+            this.map_client_lock.readLock().unlock();
         }
     }
 }

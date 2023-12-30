@@ -12,12 +12,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class State 
 {
-    class ClientInfo ()
+    class ClientInfo
     {
         int client_num;
         LinkedBoundedBuffer<Protocol> queue;
 
-
+        ClientInfo (int num, LinkedBoundedBuffer<Protocol> queue)
+        {
+            this.client_num= num;
+            this.queue= queue;
+        }
     }
 
     public LinkedBoundedBuffer<Packet> to_scalonator;
@@ -37,20 +41,14 @@ class State
         this.map_to_client= new HashMap<>();
     }
 
-
-    /**
-     * "registers the "
-     * @return
-     */
-    LinkedBoundedBuffer<Protocol> registerMap ()
+    ClientInfo registerMap ()
     {
         try
         {
-            map_lock.writeLock().lock();
-
             LinkedBoundedBuffer<Protocol> to_client= new LinkedBoundedBuffer<>();
-            this.map_to_client.put(client_inc++, to_client);
-            return to_client;
+            map_lock.writeLock().lock();
+            this.map_to_client.put(client_inc, to_client);
+            return new ClientInfo(client_inc++, to_client);
         }
         finally
         {

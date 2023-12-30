@@ -6,7 +6,6 @@ import java.io.IOException;
 
 public class Task extends Packet
 {
-    public int submitter;           // task submitter id
     public int num;                 // task id
     public int mem;                 // mem
     public byte[] arg;              // Task's arguments
@@ -20,8 +19,7 @@ public class Task extends Packet
      */
     public Task(int submitter, int num, int mem, byte[] arg) 
     {
-        super(Type.TASK);
-        this.submitter= submitter;
+        super(Type.TASK, submitter);
         this.num= num;
         this.mem = mem;
         this.arg= arg;

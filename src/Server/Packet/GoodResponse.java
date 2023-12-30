@@ -4,15 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import Protocol.Exec.Response;
-
 public class GoodResponse extends Packet
 {
     public byte[] response;
 
-    public GoodResponse (byte[] response)
+    public GoodResponse (byte[] response, int submitter)
     {
-        super(Type.GDRESP);
+        super(Type.GDRESP, submitter);
         this.response= response;
     }
 
@@ -23,11 +21,11 @@ public class GoodResponse extends Packet
         out.write(response);
     }
 
-    public static GoodResponse deserialize (DataInputStream in, Response packet) throws IOException
+    public static GoodResponse deserialize (DataInputStream in, Packet packet) throws IOException
     {
         int length = in.readInt();
         byte[] response = new byte[length];
         in.read(response, 0, length);
-        return new GoodResponse(response);
+        return new GoodResponse(response, packet.submitter);
     }
 }

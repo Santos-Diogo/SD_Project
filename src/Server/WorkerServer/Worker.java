@@ -3,8 +3,9 @@ package Server.WorkerServer;
 import ThreadTools.ThreadControl;
 import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
+import Protocol.Exec.Request;
 import Protocol.Exec.Response;
-import Server.Packet.Task;
+import Server.Packet.Packet;
 
 public class Worker implements Runnable
 {
@@ -22,21 +23,23 @@ public class Worker implements Runnable
      * @param t task
      * @return task result
      */
-    private Response exec (Task t)
+    private Packet exec (Packet t)
     {
         try
         {
+            Request r= (Request) t.protocol;
+
             // executar a tarefa
-            byte[] output = JobFunction.execute(t.arg);
+            byte[] output = JobFunction.execute(r.arg);
             
             // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-            return new GoodResponse(output);
+            return new Packet(new GoodResponse(output), t.submitter);
         } 
         catch (JobFunctionException e)
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            return new BadResponse(e.getCode(), e.getMessage());
+            return new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter);
         }
     }
 
@@ -46,8 +49,7 @@ public class Worker implements Runnable
         {
             try
             {
-                Task t= this.state.input_queue.take();
-                this.state.output_queue.put(exec(t));
+                this.state.output_queue.put(exec(this.state.input_queue.take()));
             }
             catch (InterruptedException e) {}
         }

@@ -25,8 +25,8 @@ public class BadResponse extends Response
         out.flush();
     }
 
-    public static BadResponse deserialize (DataInputStream in, Response packet) throws IOException
+    public static BadResponse deserialize (DataInputStream in) throws IOException
     {
-        return new BadResponse (in.readInt(), new String (in.readUTF())); 
+        return new BadResponse (in.readInt(), in.readUTF()); 
     }
 }

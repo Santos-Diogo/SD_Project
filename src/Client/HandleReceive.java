@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import Protocol.Protocol;
+import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Response;
 import Protocol.Status.StatusREP;
@@ -38,24 +39,35 @@ public class HandleReceive implements Runnable{
         }
     }
 
-    private void handleExec (Response received)
+    private void handleBadExec(BadResponse received)
     {
-        //Implementar badresponse
-        try {
-            GoodResponse response = GoodResponse.deserialize(in);
+        System.out.println("Job #" + received.n_job + " failed to execute. Error code: " + received.error_code + "; Message: " + received.error_message);
+    }
+
+    private void handleGoodExec (GoodResponse received)
+    {
             new Thread(() -> {
-                String finalDir = writtingDir + "/output_" + response.n_job;
+                String finalDir = writtingDir + "/output_" + received.n_job;
                 try(FileOutputStream fos = new FileOutputStream(finalDir)) {
-                    fos.write(response.response);
+                    fos.write(received.response);
                 } catch (IOException e) {
                     System.err.println("Error in writting file");
                     e.printStackTrace();
                 }
             }).start();
+    }
+
+    private void handleExec (Response received)
+    {
+        try {
+            if (!received.success)
+                handleBadExec(BadResponse.deserialize(in));
+            else
+                handleGoodExec(GoodResponse.deserialize(in));
         } catch (IOException e) {
-            System.err.println("Error in deserialization");
             e.printStackTrace();
         }
+        
     }
 
     private void handle (Protocol received)

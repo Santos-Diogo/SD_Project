@@ -2,6 +2,8 @@ package Server.ScalonatorServer;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import Protocol.Protocol;
 import Protocol.Authentication.LoginReply;
@@ -9,6 +11,7 @@ import Protocol.Authentication.LoginRequest;
 import Protocol.Authentication.RegistoReply;
 import Protocol.Authentication.RegistoRequest;
 import Protocol.Exec.Request;
+import Protocol.Status.StatusREP;
 import Server.Packet.Packet;
 import Server.ScalonatorServer.State.WorkerData;
 import Shared.LinkedBoundedBuffer;
@@ -18,12 +21,14 @@ public class Scalonator implements Runnable {
     
     private State state;
     private ThreadControl tc;
+    private Lock l;
 
 
     public Scalonator (ThreadControl tc, State state)
     {
         this.state = state;
         this.tc = tc;
+        this.l = new ReentrantLock();
     }
 
     private void handleRegReq (Packet packet)
@@ -80,37 +85,46 @@ public class Scalonator implements Runnable {
 
     private void handleStatusReq (Packet packet)
     {
-        int memoryAvailable = state.getMemoryAvailable();   
+        int memoryAvailable = state.getMemoryAvailable();
+        LinkedBoundedBuffer<Protocol> client = state.getQueueClient(packet.submitter);
+        try {
+            client.put(new StatusREP(memoryAvailable, null));
+        } catch (InterruptedException e) { }
+         
     }
 
     private void scalonate (Packet packet)
     {
-        Request request = (Request) packet.protocol;
-        Set<Map.Entry<Integer, WorkerData>> workers = state.getWorkersWithMem(request.mem);
-        //Use best-fit
-        int best_worker = -1;
-        int min_memory = Integer.MAX_VALUE;
-        System.out.println("After getworkers " + workers);
-        for(Map.Entry<Integer, WorkerData> w: workers)
-        {
-            if (w.getValue().available_mem < min_memory)
-            {
-                System.out.println(w.getKey());
-                System.out.println(w.getValue().available_mem);
-                min_memory = w.getValue().available_mem;
-                best_worker = w.getKey();
-            }
-        }
-        System.out.println(best_worker);
+        l.lock();
         try {
-            state.getQueueWorker(best_worker).put(packet);
-            state.putPacket(best_worker, packet);
-        } catch (InterruptedException e)
-        {
-            System.err.println("Could not update worker queue");
-            e.printStackTrace();
+            Request request = (Request) packet.protocol;
+            Set<Map.Entry<Integer, WorkerData>> workers = state.getWorkersWithMem(request.mem);
+            //Use best-fit
+            int best_worker = -1;
+            int min_memory = Integer.MAX_VALUE;
+            System.out.println("After getworkers " + workers);
+            for(Map.Entry<Integer, WorkerData> w: workers)
+            {
+                if (w.getValue().available_mem < min_memory)
+                {
+                    System.out.println(w.getKey());
+                    System.out.println(w.getValue().available_mem);
+                    min_memory = w.getValue().available_mem;
+                    best_worker = w.getKey();
+                }
+            }
+            System.out.println(best_worker);
+            try {
+                state.getQueueWorker(best_worker).put(packet);
+            } catch (InterruptedException e)
+            {
+                System.err.println("Could not update worker queue");
+                e.printStackTrace();
+            }
+            state.removeWorkerMem(best_worker, request.mem);
+        } finally {
+            l.unlock();
         }
-        state.removeWorkerMem(best_worker, request.mem);
     }
 
     private void handle (Packet packet) throws InterruptedException

@@ -24,7 +24,7 @@ public class State
         }
     }
 
-    public LinkedBoundedBuffer<Packet> to_scalonator;
+    public LinkedBoundedBuffer<Protocol> to_scalonator;
     public LinkedBoundedBuffer<Task> to_worker;
 
 

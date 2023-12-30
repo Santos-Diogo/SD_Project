@@ -3,19 +3,21 @@ package Server.ScalonatorServer.Communication.Client;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import Protocol.Protocol;
 import Server.ScalonatorServer.State;
 import ThreadTools.ThreadControl;
+import Shared.LinkedBoundedBuffer;
 
 public class ClientTransmitter implements Runnable
 {
     private ThreadControl tc;
-    private State state;
+    private LinkedBoundedBuffer<Protocol> input;
     private DataOutputStream out;
 
-    ClientTransmitter (ThreadControl tc, State state, DataOutputStream out)
+    ClientTransmitter (ThreadControl tc, DataOutputStream out, LinkedBoundedBuffer<Protocol> input)
     {
         this.tc= tc;
-        this.state= state;
+        this.input= input;
         this.out= out;
     }
 
@@ -23,10 +25,11 @@ public class ClientTransmitter implements Runnable
     {
         while (this.tc.getRunning())
         {
-            
             try
             {
-                this.state.to_client.take().serialize(out);
+                Protocol p= this.input.take();
+                p.serialize(out);
+                out.flush();
             }
             catch (InterruptedException e) {}
             catch (IOException e)

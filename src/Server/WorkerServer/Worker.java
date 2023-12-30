@@ -1,23 +1,22 @@
 package Server.WorkerServer;
 
 import sd23.*;
-import ThreadTools.ThreadControl;
 import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Request;
-import Protocol.Exec.Response;
 import Server.Packet.Packet;
 import Server.WorkerServer.State.Output;
 
 public class Worker implements Runnable
 {
-    private ThreadControl tc;
     private State state;
+    private Packet packet;
 
-    public Worker (ThreadControl tc, State state)
+
+    public Worker (State state, Packet packet)
     {
-        this.tc= tc;
         this.state= state;
+        this.packet = packet;
     }
 
     /**
@@ -47,13 +46,8 @@ public class Worker implements Runnable
 
     public void run ()
     {
-        while (this.tc.getRunning())
-        {
-            try
-            {
-                this.state.output_queue.put(exec(this.state.input_queue.take()));
-            }
-            catch (InterruptedException e) {}
-        }
+        try {
+            this.state.output_queue.put(exec(this.packet));
+        } catch (InterruptedException e) {{{{{{{{{{{{{{{}}}}}}}}}}}}}}}
     }
 }

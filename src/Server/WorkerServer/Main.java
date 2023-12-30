@@ -2,17 +2,12 @@ package Server.WorkerServer;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.DataOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import Shared.Defines;
 import ThreadTools.ThreadControl;
 
 
@@ -54,7 +49,6 @@ public class Main
             List<Thread> threads= new ArrayList<>();
             
             threads.add(new Thread (new Receiver(tc, state, input)));
-            threads.add(new Thread (new WorkerManager(tc, state)));
             threads.add(new Thread (new Transmitter (tc, output, state)));
 
             for (Thread t: threads)
@@ -63,7 +57,7 @@ public class Main
             }
 
             // wait for termination command
-            while (commandRequest()!= "quit") {} 
+            while (tc.getRunning() && !commandRequest().equals("quit")) {} 
             
             // terminate and cleanup
             tc.setRunning(false);

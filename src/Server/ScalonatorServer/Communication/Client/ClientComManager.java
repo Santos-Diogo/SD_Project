@@ -44,9 +44,12 @@ public class ClientComManager implements Runnable
                 // add a transmitter and receiver for each new connection
                 int num= this.state.registerMapClient();
                 LinkedBoundedBuffer<Protocol> queue= this.state.getQueueClient(num);
-
-                threads.add(new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state.to_scalonator, num)));
-                threads.add(new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), queue)));
+                Thread t1 = new Thread(new ClientReceiver(tc, new DataInputStream(socket.getInputStream()), state.to_scalonator, num));
+                Thread t2 = new Thread(new ClientTransmitter(tc, new DataOutputStream(socket.getOutputStream()), queue));
+                t1.start();
+                t2.start();
+                threads.add(t1);
+                threads.add(t2);
             }
         }
         catch (IOException e) 

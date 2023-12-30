@@ -89,15 +89,19 @@ public class Scalonator implements Runnable {
         Set<Map.Entry<Integer, WorkerData>> workers = state.getWorkersWithMem(request.mem);
         //Use best-fit
         int best_worker = -1;
-        int min_memory = -1;
+        int min_memory = Integer.MAX_VALUE;
+        System.out.println("After getworkers " + workers);
         for(Map.Entry<Integer, WorkerData> w: workers)
         {
             if (w.getValue().available_mem < min_memory)
             {
+                System.out.println(w.getKey());
+                System.out.println(w.getValue().available_mem);
                 min_memory = w.getValue().available_mem;
                 best_worker = w.getKey();
             }
         }
+        System.out.println(best_worker);
         try {
             state.getQueueWorker(best_worker).put(packet);
         } catch (InterruptedException e)

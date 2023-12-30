@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import Protocol.Protocol;
-import Server.ScalonatorServer.State;
 import ThreadTools.ThreadControl;
 import Shared.LinkedBoundedBuffer;
 
@@ -35,6 +34,7 @@ public class ClientTransmitter implements Runnable
             catch (IOException e)
             {
                 e.printStackTrace();
+                break;
             }
         }
     }   

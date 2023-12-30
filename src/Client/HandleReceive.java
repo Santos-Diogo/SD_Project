@@ -14,14 +14,16 @@ public class HandleReceive implements Runnable{
     
     private DataInputStream in;
     private ThreadControl tc;
-    private String writtingDir; 
+    private String writtingDir;
+    private Client client;
 
 
-    public HandleReceive (DataInputStream in, ThreadControl tc, String dir)
+    public HandleReceive (DataInputStream in, ThreadControl tc, String dir, Client client)
     {
         this.in = in;
         this.tc = tc;
         this.writtingDir = dir;
+        this.client = client;
     }
 
     private void handleStatus (StatusREP received)
@@ -85,10 +87,11 @@ public class HandleReceive implements Runnable{
             try {
                 Protocol received = Protocol.deserialize(in);
                 handle(received);
-            } catch (IOException e) {
-                System.err.println("Error in deserialization");
-                e.printStackTrace();
-            }
+            } catch (IOException e) { 
+                client.quit();
+                System.err.println("Lost connection to server, please press enter to quit");
+                break; 
+            }   
         }
     }
 }

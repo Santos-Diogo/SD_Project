@@ -60,7 +60,7 @@ public class HandleSend implements Runnable
         } finally {
             l.unlock();
         }
-        System.out.println("Job #" + request.n_job + " submitted");
+        System.out.println("\nJob #" + request.n_job + " submitted\n");
     }
 
     public void handle (String command)
@@ -90,7 +90,7 @@ public class HandleSend implements Runnable
                 String command = commands.take();
                 handle(command);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                break;
             }
         }
     }

@@ -17,12 +17,14 @@ public class WorkerReceiver implements Runnable
     ThreadControl tc;
     DataInputStream input;
     State state;
+    int my_num;
 
-    WorkerReceiver (ThreadControl tc, DataInputStream input, State state)
+    WorkerReceiver (ThreadControl tc, DataInputStream input, State state, int my_num)
     {
         this.tc= tc;
         this.input= input;
         this.state= state;
+        this.my_num= my_num;
     }
 
     public void run ()
@@ -43,7 +45,8 @@ public class WorkerReceiver implements Runnable
             catch (InterruptedException e) {}
             catch (IOException e)
             {
-                e.printStackTrace();
+                System.out.println("Worker Disconnected");
+                this.state.removeWorker(this.my_num);
             }
         }
     }    

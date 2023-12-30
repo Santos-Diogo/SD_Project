@@ -1,5 +1,6 @@
 package Server.WorkerServer;
 
+import sd23.*;
 import ThreadTools.ThreadControl;
 import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
@@ -35,12 +36,12 @@ public class Worker implements Runnable
             
             // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-            return new Output(r.mem, new Packet(new GoodResponse(output), t.submitter));
+            return this.state.new Output(r.mem, new Packet(new GoodResponse(output), t.submitter));
         } 
         catch (JobFunctionException e)
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            return new Output(r.mem, new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter));
+            return this.state.new Output(r.mem, new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter));
         }
     }
 

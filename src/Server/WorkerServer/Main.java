@@ -31,10 +31,10 @@ public class Main
     public static void main (String[] args)
     {
         // get the scalonator's ip adress
-        String scalonator_adr= args [1];
+        String scalonator_adr= args[0];
 
         // get own memory
-        int mem= Integer.valueOf(args[2]);
+        int mem= Integer.valueOf(args[1]);
 
         try
         {

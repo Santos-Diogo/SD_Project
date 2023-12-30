@@ -27,8 +27,8 @@ public class Transmitter implements Runnable
             try
             {
                 Output outp_pack= this.state.output_queue.take();
-                this.output.writeInt(outp_pack.mem);
                 outp_pack.p.serialize(output);
+                this.output.writeInt(outp_pack.mem);
                 this.output.flush();
             }
             catch (InterruptedException e){}

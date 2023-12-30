@@ -44,9 +44,11 @@ public class State
         this.to_scalonator= new LinkedBoundedBuffer<>();
         this.usermanager = new UserManager();
         this.map_client_lock= new ReentrantReadWriteLock();
+        this.map_worker_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
         this.worker_inc = 0;
         this.map_to_client= new HashMap<>();
+        this.map_to_worker= new HashMap<>();
     }
 
     public int registerMapClient ()

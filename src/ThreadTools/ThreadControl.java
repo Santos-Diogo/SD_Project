@@ -13,7 +13,7 @@ public class ThreadControl
     private boolean running;
     private ReentrantReadWriteLock rwl;
     private Lock condition_lock; 
-    private Condition c= condition_lock.newCondition ();
+    private Condition c;
     
     public ThreadControl ()
     {

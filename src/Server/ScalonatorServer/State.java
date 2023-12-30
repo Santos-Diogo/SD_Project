@@ -1,6 +1,7 @@
 package Server.ScalonatorServer;
 
 import Protocol.Protocol;
+import Protocol.Exec.Request;
 import Server.Packet.Packet;
 import Shared.LinkedBoundedBuffer;
 
@@ -18,7 +19,7 @@ public class State
     {
         public int available_mem;
         public final int maxCapacity;
-        public List<Integer> jobs;
+        public Map<Integer, Packet> packet_in_exec;                 // fault tolerance
         public LinkedBoundedBuffer<Packet> queue;
 
         WorkerData (int available_mem)
@@ -144,7 +145,43 @@ public class State
         try
         {
             this.map_worker_lock.writeLock().lock();
-            this.map_to_worker.remove(worker);
+            WorkerData data= this.map_to_worker.remove(worker);
+            Collection<Packet> packets= data.packet_in_exec.values();
+            for (Packet p: packets)
+            {
+                try
+                {
+                    this.to_scalonator.put(p);
+                }
+                catch (InterruptedException e) {}
+            }
+        }
+        finally
+        {
+            this.map_worker_lock.writeLock().unlock();
+        }
+    }
+
+    public void putPacket (int worker, Packet p)
+    {
+        try
+        {
+            this.map_worker_lock.writeLock().lock();
+            Request r= (Request) p.protocol;
+            this.map_to_worker.get(worker).packet_in_exec.put(r.n_job, p);
+        }
+        finally
+        {
+            this.map_worker_lock.writeLock().unlock();
+        }
+    }
+
+    public void remPacket (int worker, int n_packet)
+    {
+        try
+        {
+            this.map_worker_lock.writeLock().lock();
+            this.map_to_worker.get(worker).packet_in_exec.remove(n_packet);
         }
         finally
         {

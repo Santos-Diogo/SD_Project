@@ -35,12 +35,13 @@ public class WorkerReceiver implements Runnable
             {
                 Protocol.deserialize(input);
                 Response response = Response.deserialize(input);
-                Protocol finalResponse = (response.success) ? GoodResponse.deserialize(input) : BadResponse.deserialize(input);
+                Response finalResponse = (response.success) ? GoodResponse.deserialize(input) : BadResponse.deserialize(input);
                 Packet p= Packet.deserialize(input, finalResponse);
                 LinkedBoundedBuffer<Protocol> output= this.state.getQueueClient(p.submitter);
                 output.put(p.protocol);
                 int mem= this.input.readInt();
                 this.state.removeWorkerMem(p.submitter, -mem);
+                this.state.remPacket(this.my_num, response.n_job);
             }
             catch (InterruptedException e) {}
             catch (IOException e)

@@ -104,6 +104,7 @@ public class Scalonator implements Runnable {
         System.out.println(best_worker);
         try {
             state.getQueueWorker(best_worker).put(packet);
+            state.putPacket(best_worker, packet);
         } catch (InterruptedException e)
         {
             System.err.println("Could not update worker queue");

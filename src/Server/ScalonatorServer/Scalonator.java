@@ -1,11 +1,19 @@
 package Server.ScalonatorServer;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+
 import Protocol.Protocol;
 import Protocol.Authentication.LoginReply;
 import Protocol.Authentication.LoginRequest;
 import Protocol.Authentication.RegistoReply;
 import Protocol.Authentication.RegistoRequest;
+import Protocol.Exec.Request;
 import Server.Packet.Packet;
+import Server.ScalonatorServer.State.WorkerData;
+import Server.WorkerServer.Worker;
 import Shared.LinkedBoundedBuffer;
 import ThreadTools.ThreadControl;
 
@@ -80,7 +88,27 @@ public class Scalonator implements Runnable {
 
     private void scalonate (Packet packet)
     {
-
+        Request request = (Request) packet.protocol;
+        Set<Map.Entry<Integer, WorkerData>> workers = state.getWorkersWithMem(request.mem);
+        //Use best-fit
+        int best_worker = -1;
+        int min_memory = -1;
+        for(Map.Entry<Integer, WorkerData> w: workers)
+        {
+            if (w.getValue().available_mem < min_memory)
+            {
+                min_memory = w.getValue().available_mem;
+                best_worker = w.getKey();
+            }
+        }
+        try {
+            state.getQueueWorker(best_worker).put(packet);
+        } catch (InterruptedException e)
+        {
+            System.err.println("Could not update worker queue");
+            e.printStackTrace();
+        }
+        state.removeWorkerMem(best_worker, request.mem);
     }
 
     private void handle (Packet packet) throws InterruptedException

@@ -6,7 +6,9 @@ import Shared.LinkedBoundedBuffer;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,11 +17,14 @@ public class State
     public class WorkerData
     {
         public int available_mem;
+        public final int maxCapacity;
+        public List<Integer> jobs;
         public LinkedBoundedBuffer<Packet> queue;
 
         WorkerData (int available_mem)
         {
             this.available_mem= available_mem;
+            this.maxCapacity = available_mem;
             this.queue= new LinkedBoundedBuffer<>();
         }
     }
@@ -86,6 +91,22 @@ public class State
         return sum;
     }
 
+    public Set<Map.Entry<Integer, WorkerData>> getWorkersWithMem(int mem)
+    {
+        map_worker_lock.readLock().lock();
+        Set<Map.Entry<Integer, WorkerData>> mems = map_to_worker.entrySet();
+        map_worker_lock.readLock().unlock();
+        mems.stream().filter((e) -> e.getValue().available_mem >= mem);
+        return mems;
+    }
+
+    public void removeWorkerMem (int worker, int mem_taken)
+    {
+        map_worker_lock.writeLock().lock();
+        WorkerData w = map_to_worker.get(worker);
+        w.available_mem -= mem_taken;
+        map_worker_lock.writeLock().unlock();
+    }
 
     public LinkedBoundedBuffer<Protocol> getQueueClient (int submitter)
     {

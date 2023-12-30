@@ -5,33 +5,29 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import Protocol.Protocol;
+
 public class Packet 
 {
-    public enum Type
-    {
-        REG,
-        TASK,
-        GDRESP,
-        BDRESP
-    }
-
-    public Type type;
+    public Protocol protocol;
     public int submitter;
 
-    public Packet (Type type, int submitter)
+    public Packet (Protocol protocol, int submitter)
     {
-        this.type= type;
+        this.protocol= protocol;
         this.submitter = submitter;
     }
 
     public void serialize (DataOutputStream out) throws IOException
     {
-        out.writeInt(this.type.ordinal());
+        protocol.serialize(out);
         out.writeInt(submitter);
     }
 
     public static Packet deserialize (DataInputStream in) throws IOException
     {
-        return new Packet (Type.values()[in.readInt()], in.readInt());
+        Protocol protocol = Protocol.deserialize(in);
+        int submitter = in.readInt();
+        return new Packet (protocol, submitter);
     }
 }

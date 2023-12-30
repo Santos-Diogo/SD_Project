@@ -2,7 +2,6 @@ package Server.ScalonatorServer;
 
 import Protocol.Protocol;
 import Server.Packet.Packet;
-import Server.Packet.Task;
 import Shared.LinkedBoundedBuffer;
 
 import java.util.HashMap;
@@ -24,9 +23,9 @@ public class State
         }
     }
 
-    public LinkedBoundedBuffer<Protocol> to_scalonator;
-    public LinkedBoundedBuffer<Task> to_worker;
-
+    public LinkedBoundedBuffer<Packet> to_scalonator;
+    public LinkedBoundedBuffer<Packet> to_worker;
+    private UserManager usermanager;
 
     private ReadWriteLock map_lock;
     private int client_inc;
@@ -36,9 +35,25 @@ public class State
     {
         this.to_scalonator= new LinkedBoundedBuffer<>();
         this.to_worker= new LinkedBoundedBuffer<>();
+        this.usermanager = new UserManager();
         this.map_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
         this.map_to_client= new HashMap<>();
+    }
+
+    public boolean existsUser (String username)
+    {
+        return usermanager.existsUser(username);
+    }
+
+    public void addUser (String username, String password)
+    {
+        usermanager.addUser(username, password);
+    }
+
+    public boolean checkPassword (String username, String password)
+    {
+        return usermanager.checkPassword(username, password);
     }
 
     public ClientInfo registerMap ()

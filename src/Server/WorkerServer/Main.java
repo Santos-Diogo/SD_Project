@@ -34,7 +34,7 @@ public class Main
         String scalonator_adr= args [1];
 
         // get own memory
-        long mem= Long.valueOf(args[2]);
+        int mem= Integer.valueOf(args[2]);
 
         try
         {
@@ -42,6 +42,10 @@ public class Main
             Socket socket= new Socket(scalonator_adr, Server.Shared.Defines.scalonator_worker_port);
             DataInputStream input= new DataInputStream(socket.getInputStream());
             DataOutputStream output= new DataOutputStream(socket.getOutputStream());
+
+            // write mem to scalonator
+            output.writeInt(mem);
+
 
             // create state, reciever, worker and transmitter
             ThreadControl tc= new ThreadControl();

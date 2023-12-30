@@ -78,6 +78,7 @@ public class State
     public int getMemoryAvailable ()
     {
         map_worker_lock.readLock().lock();
+<<<<<<< Updated upstream
         Collection<WorkerData> mems = map_to_worker.values();
         map_worker_lock.readLock().unlock();
         int sum = 0;
@@ -87,6 +88,17 @@ public class State
     }
 
     public LinkedBoundedBuffer<Protocol> getQueueClient (int submitter)
+=======
+        Collection<Integer> mems = map_to_worker.values();
+        map_worker_lock.readLock().unlock();
+        int sum = 0;
+        for(Integer i : mems)
+            sum += i;
+        return sum;
+    }
+
+    public LinkedBoundedBuffer<Protocol> getMapClient (int submitter)
+>>>>>>> Stashed changes
     {
         try
         {

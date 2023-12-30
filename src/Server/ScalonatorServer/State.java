@@ -11,15 +11,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class State 
 {
-    public class ClientInfo
+    public class WorkerData
     {
-        public int client_num;
-        public LinkedBoundedBuffer<Protocol> queue;
+        public int available_mem;
+        public LinkedBoundedBuffer<Packet> queue;
 
-        public ClientInfo (int num, LinkedBoundedBuffer<Protocol> queue)
+        WorkerData (int available_mem)
         {
-            this.client_num= num;
-            this.queue= queue;
+            this.available_mem= available_mem;
+            this.queue= new LinkedBoundedBuffer<>();
         }
     }
 
@@ -32,7 +32,7 @@ public class State
     private int client_inc;
     private int worker_inc;
     private Map<Integer, LinkedBoundedBuffer<Protocol>> map_to_client;
-    private Map<Integer, Integer> map_to_workerMem;
+    private Map<Integer, WorkerData> map_to_worker;
 
     public State ()
     {
@@ -45,7 +45,7 @@ public class State
         this.map_to_client= new HashMap<>();
     }
 
-    public int registerMap ()
+    public int registerMapClient ()
     {
         try
         {
@@ -63,10 +63,10 @@ public class State
 
     public int registerMapWorker (int mem)
     {
-        map_worker_lock.writeLock().lock();
         try
         {
-            map_to_workerMem.put(worker_inc, mem);
+            map_worker_lock.writeLock().lock();
+            map_to_worker.put(worker_inc, new WorkerData(mem));
             return this.worker_inc;
         } 
         finally 
@@ -76,7 +76,7 @@ public class State
         }
     }
 
-    public LinkedBoundedBuffer<Protocol> getMap (int submitter)
+    public LinkedBoundedBuffer<Protocol> getMapClient (int submitter)
     {
         try
         {
@@ -86,6 +86,19 @@ public class State
         finally
         {
             this.map_client_lock.readLock().unlock();
+        }
+    }
+
+    public LinkedBoundedBuffer<Packet> getQueueWorker (int worker)
+    {
+        try
+        {
+            this.map_worker_lock.readLock().lock();
+            return this.map_to_worker.get(worker).queue;
+        }
+        finally
+        {
+            this.map_worker_lock.readLock().unlock();
         }
     }
 }

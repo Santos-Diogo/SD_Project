@@ -44,9 +44,11 @@ public class State
         this.to_scalonator= new LinkedBoundedBuffer<>();
         this.usermanager = new UserManager();
         this.map_client_lock= new ReentrantReadWriteLock();
+        this.map_worker_lock= new ReentrantReadWriteLock();
         this.client_inc= 0;
         this.worker_inc = 0;
         this.map_to_client= new HashMap<>();
+        this.map_to_worker= new HashMap<>();
     }
 
     public int registerMapClient ()
@@ -69,6 +71,8 @@ public class State
     {
         try
         {
+            System.out.println(mem);
+            System.out.println(worker_inc);
             map_worker_lock.writeLock().lock();
             map_to_worker.put(worker_inc, new WorkerData(mem));
             return this.worker_inc;
@@ -97,6 +101,7 @@ public class State
         Set<Map.Entry<Integer, WorkerData>> mems = map_to_worker.entrySet();
         map_worker_lock.readLock().unlock();
         mems.stream().filter((e) -> e.getValue().available_mem >= mem);
+        System.out.println(mems);
         return mems;
     }
 

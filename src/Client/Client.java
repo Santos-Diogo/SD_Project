@@ -61,7 +61,7 @@ public class Client implements IClient
 
     public void setWrittingDir (String writtingDir)
     {
-        this.receivingThread = new Thread(new HandleReceive(in, tc, writtingDir));
+        this.receivingThread = new Thread(new HandleReceive(in, tc, writtingDir, this));
         this.receivingThread.start();
     }
 
@@ -75,4 +75,31 @@ public class Client implements IClient
         }
     }
 
+    public void quit()
+    {
+        try{
+            tc.setRunning(false);
+            for (Thread t : sendingThreads)
+            {
+                t.interrupt();
+                t.join();
+            }
+            in.close();
+            receivingThread.interrupt();
+            receivingThread.join();
+        } catch(Exception e) {
+        } finally {  
+            try {
+                out.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean serverRunning ()
+    {
+        return tc.getRunning();
+    }
 }

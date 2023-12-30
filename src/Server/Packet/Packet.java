@@ -30,4 +30,10 @@ public class Packet
         int submitter = in.readInt();
         return new Packet (protocol, submitter);
     }
+
+    public static Packet deserialize (DataInputStream in, Protocol protocol) throws IOException
+    {
+        int submitter = in.readInt();
+        return new Packet (protocol, submitter);
+    }
 }

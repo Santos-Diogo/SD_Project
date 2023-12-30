@@ -3,6 +3,7 @@ package Server.WorkerServer;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import Protocol.Protocol;
 import Protocol.Exec.Request;
 import Server.Packet.Packet;
 import ThreadTools.ThreadControl;
@@ -26,12 +27,15 @@ public class Receiver implements Runnable
         {
             try
             {
-                this.state.input_queue.put(Packet.deserialize(this.input));
+                Protocol.deserialize(input);
+                Request request = Request.deserialize(input);
+                new Thread(new Worker(state, (Packet.deserialize(this.input, request)))).start();
             }
-            catch (InterruptedException e) {}
             catch (IOException e) 
             {
-                e.printStackTrace();
+                System.err.println("Server disconnected, please press enter to quit");
+                tc.setRunning(false);
+                break;
             }
         }
     }

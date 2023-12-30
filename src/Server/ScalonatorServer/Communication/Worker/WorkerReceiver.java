@@ -4,6 +4,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import Protocol.Protocol;
+import Protocol.Exec.BadResponse;
+import Protocol.Exec.GoodResponse;
+import Protocol.Exec.Response;
 import Server.Packet.Packet;
 import Server.ScalonatorServer.State;
 import Shared.LinkedBoundedBuffer;
@@ -28,7 +31,10 @@ public class WorkerReceiver implements Runnable
         {
             try
             {
-                Packet p= Packet.deserialize(input);
+                Protocol.deserialize(input);
+                Response response = Response.deserialize(input);
+                Protocol finalResponse = (response.success) ? GoodResponse.deserialize(input) : BadResponse.deserialize(input);
+                Packet p= Packet.deserialize(input, finalResponse);
                 LinkedBoundedBuffer<Protocol> output= this.state.getQueueClient(p.submitter);
                 output.put(p.protocol);
                 int mem= this.input.readInt();

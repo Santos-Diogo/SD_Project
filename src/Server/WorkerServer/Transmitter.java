@@ -3,7 +3,6 @@ package Server.WorkerServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import Protocol.Exec.Response;
 import Server.WorkerServer.State.Output;
 import ThreadTools.ThreadControl;
 
@@ -27,8 +26,8 @@ public class Transmitter implements Runnable
             try
             {
                 Output outp_pack= this.state.output_queue.take();
-                this.output.writeInt(outp_pack.mem);
                 outp_pack.p.serialize(output);
+                this.output.writeInt(outp_pack.mem);
                 this.output.flush();
             }
             catch (InterruptedException e){}

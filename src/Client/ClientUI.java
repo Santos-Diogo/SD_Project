@@ -76,7 +76,7 @@ public class ClientUI {
         client.setWrittingDir((scannerDir.equals("")) ? System.getProperty("user.dir") : scannerDir);
         command_request();
         String command;
-        while (!(command = scanner.nextLine()).equals("quit")) 
+        while (client.serverRunning() && !(command = scanner.nextLine()).equals("quit")) 
         {
             client.handle(command);
         } 
@@ -144,6 +144,9 @@ public class ClientUI {
         connect();
         authenticate();
         if (authenticated)
+        {
             execute();
+            client.quit();
+        }
     }
 }

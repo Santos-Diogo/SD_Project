@@ -1,22 +1,22 @@
 package Server.WorkerServer;
 
-import ThreadTools.ThreadControl;
+import sd23.*;
 import Protocol.Exec.BadResponse;
 import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Request;
-import Protocol.Exec.Response;
 import Server.Packet.Packet;
 import Server.WorkerServer.State.Output;
 
 public class Worker implements Runnable
 {
-    private ThreadControl tc;
     private State state;
+    private Packet packet;
 
-    public Worker (ThreadControl tc, State state)
+
+    public Worker (State state, Packet packet)
     {
-        this.tc= tc;
         this.state= state;
+        this.packet = packet;
     }
 
     /**
@@ -35,24 +35,19 @@ public class Worker implements Runnable
             
             // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-            return new Output(r.mem, new Packet(new GoodResponse(output), t.submitter));
+            return this.state.new Output(r.mem, new Packet(new GoodResponse(output), t.submitter));
         } 
         catch (JobFunctionException e)
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            return new Output(r.mem, new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter));
+            return this.state.new Output(r.mem, new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter));
         }
     }
 
     public void run ()
     {
-        while (this.tc.getRunning())
-        {
-            try
-            {
-                this.state.output_queue.put(exec(this.state.input_queue.take()));
-            }
-            catch (InterruptedException e) {}
-        }
+        try {
+            this.state.output_queue.put(exec(this.packet));
+        } catch (InterruptedException e) {{{{{{{{{{{{{{{}}}}}}}}}}}}}}}
     }
 }

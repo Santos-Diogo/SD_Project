@@ -11,4 +11,8 @@ public interface IClient {
     public void setWrittingDir (String writtingDir);
 
     public void handle (String command);
+
+    public void quit ();
+
+    public boolean serverRunning ();
 }

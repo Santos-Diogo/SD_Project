@@ -8,5 +8,7 @@ public interface IClient {
 
     public Optional<String> login(String username, String password);
 
+    public void setWrittingDir (String writtingDir);
+
     public void handle (String command);
 }

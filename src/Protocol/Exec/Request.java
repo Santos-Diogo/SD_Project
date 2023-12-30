@@ -18,11 +18,11 @@ public class Request extends Protocol
     public Request (byte[] arg, int mem)
     {
         super (Type.EXEC_RQ);
+        this.arg= arg;
+        this.mem= mem;
+        rl.lock();
         try
         {
-            this.arg= arg;
-            this.mem= mem;
-            rl.lock();
             this.n_job= inc++;
         }
         finally

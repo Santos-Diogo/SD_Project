@@ -13,6 +13,7 @@ public class ClientUI {
     private static IClient client;
     private static String user;
 
+
     private static boolean registerClient()
     {
         System.out.print("\nUsername: ");
@@ -71,6 +72,10 @@ public class ClientUI {
     {
         ClearTerminal();
         System.out.println("Welcome " +  user + '\n');
+        System.out.println("\nDirectory to write the output files (leave in blank for the current directory)");
+        System.out.print("Directory: ");
+        String scannerDir = scanner.nextLine();
+        client.setWrittingDir((scannerDir.equals("")) ? System.getProperty("user.dir") : scannerDir);
         String command;
         while (!(command = command_request()).equals("quit")) 
         {

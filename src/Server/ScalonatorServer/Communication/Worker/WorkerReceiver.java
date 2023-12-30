@@ -31,6 +31,8 @@ public class WorkerReceiver implements Runnable
                 Packet p= Packet.deserialize(input);
                 LinkedBoundedBuffer<Protocol> output= this.state.getQueueClient(p.submitter);
                 output.put(p.protocol);
+                int mem= this.input.readInt();
+                this.state.removeWorkerMem(p.submitter, -mem);
             }
             catch (InterruptedException e) {}
             catch (IOException e)

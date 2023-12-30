@@ -6,6 +6,7 @@ import Protocol.Exec.GoodResponse;
 import Protocol.Exec.Request;
 import Protocol.Exec.Response;
 import Server.Packet.Packet;
+import Server.WorkerServer.State.Output;
 
 public class Worker implements Runnable
 {
@@ -23,23 +24,23 @@ public class Worker implements Runnable
      * @param t task
      * @return task result
      */
-    private Packet exec (Packet t)
+    private Output exec (Packet t)
     {
+        Request r= (Request) t.protocol;
         try
         {
-            Request r= (Request) t.protocol;
 
             // executar a tarefa
             byte[] output = JobFunction.execute(r.arg);
             
             // return success or failure packages
             System.err.println("success, returned "+output.length+" bytes");
-            return new Packet(new GoodResponse(output), t.submitter);
+            return new Output(r.mem, new Packet(new GoodResponse(output), t.submitter));
         } 
         catch (JobFunctionException e)
         {
             System.err.println("job failed: code="+e.getCode()+" message="+e.getMessage());
-            return new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter);
+            return new Output(r.mem, new Packet(new BadResponse(e.getCode(), e.getMessage()), t.submitter));
         }
     }
 

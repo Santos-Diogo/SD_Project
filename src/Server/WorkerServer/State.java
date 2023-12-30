@@ -7,8 +7,20 @@ import Shared.LinkedBoundedBuffer;
 
 class State
 {
+    class Output
+    {
+        int mem;
+        Packet p;
+
+        Output (int mem, Packet p)
+        {
+            this.mem= mem;
+            this.p= p;
+        }
+    }
+
     LinkedBoundedBuffer<Packet> input_queue;
-    LinkedBoundedBuffer<Packet> output_queue;
+    LinkedBoundedBuffer<Output> output_queue;
     long max_mem;
 
     State (long mem)

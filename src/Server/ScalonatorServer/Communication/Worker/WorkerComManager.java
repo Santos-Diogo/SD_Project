@@ -32,9 +32,9 @@ public class WorkerComManager implements Runnable
             while (this.tc.getRunning())
             {
                 Socket s= server_socket.accept();
-                // read memory
                 DataInputStream socket_input= new DataInputStream(s.getInputStream());
                 DataOutputStream socket_output= new DataOutputStream(s.getOutputStream());
+                // read memory
                 int mem= socket_input.readInt();
 
                 //start transmitter and receiver

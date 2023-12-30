@@ -1,6 +1,5 @@
 package Server.ScalonatorServer.Communication.Worker;
 
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 

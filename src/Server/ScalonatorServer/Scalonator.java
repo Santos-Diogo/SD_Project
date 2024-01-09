@@ -83,6 +83,7 @@ public class Scalonator implements Runnable {
     {
         int memoryAvailable = state.getMemoryAvailable();
         int pendingRequests = state.to_scalonator.size();
+        System.out.println(pendingRequests);
         LinkedBoundedBuffer<Protocol> client = state.getQueueClient(packet.submitter);
         try {
             client.put(new StatusREP(memoryAvailable, pendingRequests));
@@ -128,6 +129,7 @@ public class Scalonator implements Runnable {
                 break;
             case STATUS_RQ:
                 handleStatusReq(packet); 
+                break;
             case LG_IN_RQ:
                 handleLoginReq(packet);
                 break;

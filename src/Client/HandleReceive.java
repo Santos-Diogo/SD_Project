@@ -29,14 +29,8 @@ public class HandleReceive implements Runnable{
 
     private void handleStatus (StatusREP received)
     {
-        try {
-            StatusREP packet = StatusREP.deserialize(in);
-            System.out.println("Memory available: " + packet.available_memory);
-            System.out.println("Number of Pending tasks: " + packet.number_of_tasks);
-        } catch (IOException e) {
-            System.err.println("Error in deserialization");
-            e.printStackTrace();
-        }
+        System.out.println("Memory available: " + received.available_memory);
+        System.out.println("Number of Pending tasks: " + received.number_of_tasks);
     }
 
     private void handleBadExec(BadResponse received)
@@ -83,6 +77,7 @@ public class HandleReceive implements Runnable{
                 case STATUS_RP:
                 {
                     handleStatus(StatusREP.deserialize(in));
+                    break;
                 }
                 default : {}
             }

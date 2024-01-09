@@ -29,7 +29,6 @@ public class StatusREP extends Protocol {
 
     public static StatusREP deserialize (DataInputStream in) throws IOException
     {
-        Protocol.deserialize(in);
         long available_memory = in.readLong();
         int number_of_tasks = in.readInt();
         return new StatusREP(available_memory, number_of_tasks);

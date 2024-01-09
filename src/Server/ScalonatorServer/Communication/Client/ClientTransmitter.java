@@ -28,7 +28,7 @@ public class ClientTransmitter implements Runnable
             {
                 Protocol p= this.input.take();
                 p.serialize(out);
-                out.flush();
+                //out.flush();
             }
             catch (InterruptedException e) {}
             catch (IOException e)

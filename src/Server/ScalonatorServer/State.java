@@ -7,6 +7,7 @@ import Shared.LinkedBoundedBuffer;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -90,7 +91,11 @@ public class State
         map_worker_lock.readLock().unlock();
         int sum = 0;
         for(WorkerData wd : mems)
+        {
+
+            System.out.println(wd.available_mem);
             sum += wd.available_mem;
+        }
         return sum;
     }
 
@@ -99,9 +104,13 @@ public class State
         map_worker_lock.readLock().lock();
         Set<Map.Entry<Integer, WorkerData>> mems = map_to_worker.entrySet();
         map_worker_lock.readLock().unlock();
-        mems.stream().filter((e) -> e.getValue().available_mem >= mem);
-        System.out.println(mems);
-        return mems;
+        Set<Map.Entry<Integer, WorkerData>> finale = new HashSet<Map.Entry<Integer,WorkerData>>();
+        for (Map.Entry<Integer, WorkerData> wd : mems)
+        {
+            if (wd.getValue().available_mem >= mem)
+                finale.add(wd);
+        }
+        return finale;
     }
 
     public void removeWorkerMem (int worker, int mem_taken)
